@@ -1,0 +1,42 @@
+i.password,
+i.account,
+i.username,
+i.city,
+i.department,
+i.job {
+  display: inline-block;
+  @include setSize(24px, 24px);
+  @include setBackground;
+}
+
+i.coffee-loading {
+  display: inline-block;
+  @include setSize(72px, 72px);
+  @include setBackground;
+  @include setBGURL('~@/assets/icons/loading.svg');
+}
+
+
+i.account {
+  @include setBGURL('~@/assets/icons/account.svg');
+}
+
+i.password {
+  @include setBGURL('~@/assets/icons/key.svg');
+}
+
+i.city {
+  @include setBGURL('~@/assets/icons/city.svg');
+}
+
+i.department {
+  @include setBGURL('~@/assets/icons/department.svg');
+}
+
+i.job {
+  @include setBGURL('~@/assets/icons/job.svg');
+}
+
+i.username {
+  @include setBGURL('~@/assets/icons/username.svg');
+}

@@ -1,0 +1,88 @@
+@import "~normalize.css";
+@import "~@/styles/mixins.scss";
+@import "~@/styles/icons.scss";
+@import "~@/styles/element-variables.scss";
+@import "~@/styles/font.scss";
+$default: #3F51B5;
+$primary: #20a0ff;
+$success: #13ce66;
+$warning: #FF9800;
+$danger: #E6434C;
+$info: #5677FC;
+$black: #5e5e5e;
+$placeholder: #C1C1C1;
+$tips: #9e9e9e;
+$mask: rgba(250, 250, 250, 0.5);
+::-webkit-input-placeholder {
+  color: $placeholder;
+}
+
+html {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif !important;
+}
+
+.coffee-loading__wrapper {
+  p {
+    color: #fff !important;
+    font-size: 14px;
+  }
+}
+
+.el-form-item__error--inline {
+  @include absTL(15px, 370px);
+  width: 200px;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.el-form-item__content {
+  height: 100% !important;
+}
+
+.el-icon-circle-close:before {
+  content: "" !important;
+}
+
+.el-icon-circle-check:before {
+  content: "" !important;
+}
+
+.el-tabs__nav-wrap::after {
+  content: initial !important;
+}
+
+.el-tabs__item {
+  text-align: center;
+  width: 124px;
+  &.is-active {
+    font-weight: bold;
+    color: $default !important;
+  }
+  &:hover {
+    color: $default !important;
+  }
+}
+
+.el-tabs__active-bar {
+  background-color: $black;
+  height: 3px;
+}
+
+.is-error {
+  .input {
+    border-color: $danger !important;
+  }
+}
+
+.el-card__header {
+  padding: 16px 12px;
+}
+
+.el-card__body {
+  padding: 12px 12px 20px 12px;
+}
+
+.el-progress-bar__inner {
+  background-color: $default;
+}

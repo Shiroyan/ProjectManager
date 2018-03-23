@@ -1,0 +1,94 @@
+@mixin fullSize {
+  height: 100%;
+  width: 100%;
+}
+
+@mixin setSize($w, $h) {
+  width: $w;
+  height: $h;
+}
+
+@mixin tl($top: 0, $left: 0) {
+  top: $top;
+  left: $left;
+}
+
+@mixin tr($top: 0, $right: 0) {
+  top: $top;
+  right: $right;
+}
+
+@mixin bl($bottom: 0, $left: 0) {
+  bottom: $bottom;
+  left: $left;
+}
+
+@mixin br($bottom: 0, $right: 0) {
+  bottom: $bottom;
+  right: $right;
+}
+
+@mixin fixed {
+  position: fixed;
+}
+
+@mixin absolute {
+  position: absolute;
+}
+
+@mixin fixedTL($top: 0, $left: 0) {
+  @include fixed;
+  @include tl($top, $left);
+}
+
+@mixin fixedBL($bottom: 0, $left: 0) {
+  @include fixed;
+  @include bl($bottom, $left);
+}
+
+@mixin fixedBR($bottom: 0, $right: 0) {
+  @include fixed;
+  @include br($bottom, $right);
+}
+
+@mixin absTL($top: 0, $left: 0) {
+  @include absolute;
+  @include tl($top, $left);
+}
+
+@mixin absTR($top: 0, $right: 0) {
+  @include absolute;
+  @include tr($top, $right);
+}
+
+@mixin absBR($bottom: 0, $right: 0) {
+  @include absolute;
+  @include br($bottom, $right);
+}
+
+@mixin flex($jc) {
+  display: flex;
+  align-items: center;
+  justify-content: $jc;
+}
+
+@mixin borderBox {
+  box-sizing: border-box;
+}
+
+@mixin fakeEleCenter {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+@mixin setBGURL($path) {
+  background-image: url($path);
+}
+
+@mixin setBackground() {
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
