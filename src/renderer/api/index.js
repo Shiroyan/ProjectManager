@@ -9,7 +9,8 @@ const baseURL = 'http://localhost:3000';
 axios.defaults.baseURL = baseURL;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const get = (url, successCb) => {
+function errorHandler(err) { }
+function get(url, successCb) {
   axios({
     method: 'GET',
     url,
@@ -18,9 +19,9 @@ const get = (url, successCb) => {
     },
     withCredentials: true,
     crossDomain: true,
-  }).then(successCb).catch();
-};
-const post = (url, successCb, data = {}) => {
+  }).then(successCb).catch(errorHandler);
+}
+function post(url, successCb, data = {}) {
   let params = new URLSearchParams();
   for (let key in data) { // eslint-disable-line
     params.append(key, data[key]);
@@ -34,9 +35,26 @@ const post = (url, successCb, data = {}) => {
     },
     withCredentials: true,
     crossDomain: true,
-  }).then(successCb).catch();
-};
-const put = (url, successCb, data = {}) => {
+  }).then(successCb).catch(errorHandler);
+}
+//  带文件上传， Content-Type: multipart/form-data
+function post2(url, successCb, data = {}) {
+  let form = new FormData();
+  for (let key in data) { // eslint-disable-line
+    form.append(key, data[key]);
+  }
+  axios({
+    method: 'POST',
+    url,
+    data: form,
+    headers: {
+      'Content-type': 'multipart/form-data',
+    },
+    withCredentials: true,
+    crossDomain: true,
+  }).then(successCb).catch(errorHandler);
+}
+function put(url, successCb, data = {}) {
   axios({
     method: 'PUT',
     url,
@@ -46,9 +64,20 @@ const put = (url, successCb, data = {}) => {
     },
     withCredentials: true,
     crossDomain: true,
-  }).then(successCb).catch();
-};
-const $delete = axios.delete;
+  }).then(successCb).catch(errorHandler);
+}
+function $delete(url, successCb, data = {}) {
+  axios({
+    method: 'DELETE',
+    url,
+    data,
+    headers: {
+      'Content-type': 'application/json',
+    },
+    withCredentials: true,
+    crossDomain: true,
+  }).then(successCb).catch(errorHandler);
+}
 
 let loadingInstance;
 
@@ -123,6 +152,9 @@ const usersApi = {
   modifyPwd(data, successCb) {
     put('/users/password', successCb, data);
   },
+  getUsersList(successCb) {
+    get('/users', successCb);
+  },
 };
 //#endregion
 
@@ -130,6 +162,12 @@ const usersApi = {
 const projectsApi = {
   getAllProjects(type, successCb) {
     get(`/projects?type=${type}`, successCb);
+  },
+  getStages(successCb) {
+    get('/projects/options', successCb);
+  },
+  create(data, successCb) {
+    post2('/projects', successCb);
   },
 };
 //#endregion

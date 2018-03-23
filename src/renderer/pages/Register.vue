@@ -79,13 +79,10 @@ export default {
     ...mapMutations(['updateOptions']),
   },
   mounted() {
-    if (this.options.citys.length === 0
-      || this.options.deps.length === 0
-      || this.options.jobs.length === 0) {
+    this.options.citys.length === 0 &&
       this.$api.$users.options((data) => {
         this.updateOptions(data);
       });
-    }
   },
 };
 </script>
@@ -98,7 +95,7 @@ export default {
 }
 
 .form__item {
-  @include setSize(343px, 48px);  
+  @include setSize(343px, 48px);
   margin-bottom: 10px;
 }
 
@@ -114,6 +111,10 @@ export default {
 #register {
   color: #fff;
   float: right;
+  background-color: $default;
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
 #cancel {

@@ -17,17 +17,20 @@
         </project-card>
       </el-tab-pane>
     </el-tabs>
-    <el-button icon="el-icon-circle-plus" id="add-project">新增项目</el-button>
+    <el-button icon="el-icon-circle-plus" id="add-project" @click="isVisible = true">新增项目</el-button>
+    <project-dialog :isVisible.sync="isVisible"></project-dialog>
   </div>
 </template>
 
 <script>
-import ProjectCard from '../components/ProjectCard';
+import ProjectCard from '@/components/ProjectCard';
+import ProjectDialog from '@/components/ProjectDialog';
 
 export default {
   name: 'Projects',
   components: {
     'project-card': ProjectCard,
+    'project-dialog': ProjectDialog,
   },
   data() {
     return {
@@ -36,6 +39,7 @@ export default {
       projects2: [], //  立项中的项目
       projects3: [], //  已结项的项目
       hadReqest: ['project1'], //  控制TAB的请求，已请求过的不再请求
+      isVisible: false,
     };
   },
   methods: {

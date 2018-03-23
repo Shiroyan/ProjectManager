@@ -34,6 +34,7 @@ module.exports = {
     'no-plusplus': 0,
     'no-unused-vars': 0,
     'no-unused-expressions': 0,
-    'spaced-comment': 0
+    'spaced-comment': 0,
+    'no-underscore-dangle': 0,
   }
 }

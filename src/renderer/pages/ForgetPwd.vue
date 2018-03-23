@@ -49,7 +49,7 @@ export default {
           this.$api.$users.modifyPwd(this.modForm, () => {
             getCookie('token')
               .then(() => this.$api.$users.logout())
-              .catch((error) => {});
+              .catch((error) => { });
           });
         } else {
           this.$message({
@@ -82,6 +82,10 @@ export default {
 #btn-group {
   .btn {
     @include setSize(160px, 48px);
+    background-color: $default;
+    &:hover {
+      opacity: 0.9;
+    }
   }
 }
 

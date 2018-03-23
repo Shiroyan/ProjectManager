@@ -94,13 +94,17 @@ export default {
 }
 
 .form__item {
-  @include setSize(343px, 48px);  
+  @include setSize(343px, 48px);
   margin-bottom: 10px;
 }
 
 #btn-group {
   .btn {
     @include setSize(343px, 48px);
+    background-color: $default;
+    &:hover {
+      opacity: 0.9;
+    }
   }
 }
 

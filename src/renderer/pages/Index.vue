@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import { Popover } from 'element-ui';
 import { getCookie } from '@/utils';
 import Vue from 'vue';
@@ -91,6 +91,10 @@ export default {
     refresh() {
       window.location.reload();
     },
+    ...mapMutations(['updateProfile']),
+  },
+  mounted() {
+    this.profile.username === '' && this.$api.$users.getProfile(data => this.updateProfile(data));
   },
 };
 </script>

@@ -1,6 +1,6 @@
 import { isInputLegal, hasChinese } from '@/utils';
 
-const valiAccount = (rule, value, cb) => {
+function valiAccount(rule, value, cb) {
   if (!isInputLegal(value)) {
     cb(new Error('包含非法字符'));
   } else if (hasChinese(value)) {
@@ -8,7 +8,18 @@ const valiAccount = (rule, value, cb) => {
   } else {
     cb();
   }
-};
+}
+
+function valiContractVal(rule, value, cb) {
+  value = +value;
+  if (value) {
+    if (value < 0 || value > 1000000) {
+      cb(new Error('金额范围0 ~ 1000000'));
+    }
+  } else {
+    cb('请输入合同金额，必须为数字');
+  }
+}
 
 const rules = {
   account: [
@@ -33,6 +44,22 @@ const rules = {
   job: [
     { type: 'number', required: true, message: '请选择岗位', trigger: 'change' },
   ],
+  name: [// 项目名
+    { required: true, message: '请输入项目名称', trigger: 'change' },
+    { min: 3, max: 12, message: '长度3 - 12个字符', trigger: 'change' },
+  ],
+  firstParty: [// 甲方
+    { required: true, message: '请输入甲方名称', trigger: 'blur' },
+    { min: 2, max: 20, message: '长度2 - 20个字符', trigger: 'blur' },
+  ],
+  contractVal: [
+    { required: true, message: '请输入合同金额', trigger: 'blur' },
+    { validator: valiContractVal },
+  ],
+  contract: [
+    { required: true, message: '请上传文件', trigger: 'blur' },
+    { type: 'object', message: '请上传文件', trigger: 'blur' },
+  ],
 };
 
 const state = {
@@ -44,6 +71,9 @@ const state = {
   city: rules.city,
   dep: rules.dep,
   job: rules.job,
+  name: rules.name,
+  firstParty: rules.firstParty,
+  contractVal: rules.contractVal,
 };
 
 export default {
