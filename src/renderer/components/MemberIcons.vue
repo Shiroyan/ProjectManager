@@ -1,12 +1,11 @@
 <template>
   <div class="member-icons__wrapper">
     <transition-group mode="out-in" name="el-fade-in" :duration="250">
-      <div class="member-icon" v-for="m in list" :key="m.id">
-        {{m.username.length > 2 ? m.username.substr(1) : m.username}}
-        <div class="op__remove" @click="$emit('remove', m.id)">
+      <user-avatar class="member-icon" v-for="m in list" :key="m.id" :username="m.username" :job="m.jobId">
+        <div slot="mask" class="op__remove" @click="$emit('remove', m.id)">
           <i class="el-icon-minus"></i>
         </div>
-      </div>
+      </user-avatar>
     </transition-group>
     <div class="op__add" @click="$emit('add')" v-if="showAdd">
       <i class="el-icon-plus"></i>
@@ -15,8 +14,13 @@
 </template>
 
 <script>
+import UserAvatar from './UserAvatar';
+
 export default {
   name: 'member-icons',
+  components: {
+    'user-avatar': UserAvatar,
+  },
   props: {
     list: {
       type: Array,

@@ -3,22 +3,22 @@
     <el-tabs v-model="tab" @tab-click="handleClick">
       <el-tab-pane label="进行中" name="1">
         <h2 v-if="projects1.length===0" class="no-data-tips">暂无数据</h2>
-        <project-card v-for="project in projects1" :key="project.id" :id="project.id" :name="project.name" :startTime="project.startTime" :endTime="project.endTime" :leader="project.leader" :members="project.members" :process="+project.process" :stage="project.stage">
+        <project-card v-for="project in projects1" :key="project.id" :data="project">
         </project-card>
       </el-tab-pane>
-      <el-tab-pane label="立项中" name="2">
+      <el-tab-pane label="立项中" name="2" ref="begin">
         <h2 v-if="projects2.length===0" class="no-data-tips">暂无数据</h2>
-        <project-card v-for="project in projects2" :key="project.id" :id="project.id" :name="project.name" :startTime="project.startTime" :endTime="project.endTime" :leader="project.leader" :members="project.members" :process="+project.process" :stage="project.stage">
+        <project-card v-for="project in projects2" :key="project.id" :data="project">
         </project-card>
       </el-tab-pane>
       <el-tab-pane label="已结项" name="3">
         <h2 v-if="projects3.length===0" class="no-data-tips">暂无数据</h2>
-        <project-card v-for="project in projects3" :key="project.id" :id="project.id" :name="project.name" :startTime="project.startTime" :endTime="project.endTime" :leader="project.leader" :members="project.members" :process="+project.process" :stage="project.stage">
+        <project-card v-for="project in projects3" :key="project.id" :data="project">
         </project-card>
       </el-tab-pane>
     </el-tabs>
     <el-button icon="el-icon-circle-plus" id="add-project" @click="isVisible = true">新增项目</el-button>
-    <project-dialog :isVisible.sync="isVisible"></project-dialog>
+    <project-dialog :isVisible.sync="isVisible" @createdProject="createdProject"></project-dialog>
   </div>
 </template>
 
@@ -38,7 +38,6 @@ export default {
       projects1: [], //  进行中的项目
       projects2: [], //  立项中的项目
       projects3: [], //  已结项的项目
-      hadReqest: ['project1'], //  控制TAB的请求，已请求过的不再请求
       isVisible: false,
     };
   },
@@ -46,11 +45,14 @@ export default {
     handleClick(tab, event) {
       let type = tab.name;
       let propName = `projects${type}`;
-      !this.hadReqest.includes(propName)
-        && this.$api.$projects.getAllProjects(type, ({ projects }) => {
-          this[propName] = projects;
-          this.hadReqest.push(propName);
-        });
+      this.$api.$projects.getAllProjects(type, ({ projects }) => {
+        this[propName] = projects;
+      });
+    },
+    createdProject() {
+      let tab = this.$refs.begin;
+      this.tab = tab.name;
+      this.handleClick(tab);
     },
   },
   beforeRouteEnter(to, from, next) {

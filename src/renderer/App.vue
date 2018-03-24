@@ -3,6 +3,11 @@
     <transition mode="out-in" name="el-fade-in" :duration="250">
       <router-view></router-view>
     </transition>
+    <transition mode="out-in" name="el-fade-in" :duration="250">
+      <keep-alive>
+        <router-view name="alive"></router-view>
+      </keep-alive>
+    </transition>
   </div>
 </template>
 

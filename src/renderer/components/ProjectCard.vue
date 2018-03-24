@@ -1,27 +1,27 @@
 <template>
   <el-card class="project" @click.native="to">
     <div slot="header" class="header">
-      <span class="project__name">{{name}}</span>
-      <span class="project__begin-end">{{startTime}} - {{endTime}}</span>
+      <span class="project__name">{{data.name}}</span>
+      <span class="project__begin-end">{{data.startTime}} - {{data.endTime}}</span>
     </div>
     <div>
       <div class="project__leader">
         <span class="project__label">负责人</span>
-        <span class="project__value">{{leader}}</span>
+        <span class="project__value">{{data.leader}}</span>
       </div>
       <div class="project__members">
         <span class="project__label">成员</span>
-        <span class="project__value">{{members}}</span>
+        <span class="project__value">{{data.members}}</span>
       </div>
       <div class="project__process">
         <span class="project__label">进度</span>
         <span class="project__value">
-          <el-progress id="progress" :text-inside="true" :stroke-width="16" :percentage="process" :status="process === 100 ? 'success': ''"></el-progress>
+          <el-progress id="progress" :text-inside="true" :stroke-width="16" :percentage="+data.process" :status="data.process === 100 ? 'success': ''"></el-progress>
         </span>
       </div>
       <div class="project__stage">
         <span class="project__label">阶段</span>
-        <span class="project__value">{{stage}}</span>
+        <span class="project__value">{{data.stage}}</span>
       </div>
     </div>
   </el-card>
@@ -30,17 +30,13 @@
 <script>
 export default {
   props: {
-    id: { type: Number, required: true },
-    name: { type: String, required: true },
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true },
-    leader: { type: String, required: true },
-    members: { type: String, required: true },
-    process: { type: Number, required: true },
-    stage: { type: String, required: true },
+    data: {
+      type: Object,
+      required: true,
+    },
   },
   methods: {
-    to() { this.$router.push(`/project/${this.id}`); },
+    to() { this.$router.push(`/project/${this.data.id}`); },
   },
 };
 </script>
@@ -53,6 +49,9 @@ export default {
 
 .project {
   @include setSize(300px, 220px);
+  display: inline-block;
+  margin-right: 30px;
+  margin-bottom: 30px;
   cursor: pointer;
   &:hover {
     background-color: $mask;

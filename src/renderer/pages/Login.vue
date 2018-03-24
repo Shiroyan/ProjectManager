@@ -53,7 +53,7 @@ export default {
         if (valid) {
           this.$api.$users.login(this.loginForm, (data) => {
             this.updateProfile(data);
-            this.$router.push('/index');
+            this.$router.push('/');
           });
         } else {
           this.$message({
@@ -77,7 +77,7 @@ export default {
         next((vm) => {
           vm.$api.$users.autoLogin((data) => {
             vm.updateProfile(data);
-            vm.$router.push('/index');
+            vm.$router.push('/');
           });
         });
       })

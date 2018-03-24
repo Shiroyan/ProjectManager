@@ -16,8 +16,9 @@ function valiContractVal(rule, value, cb) {
     if (value < 0 || value > 1000000) {
       cb(new Error('金额范围0 ~ 1000000'));
     }
+    cb();
   } else {
-    cb('请输入合同金额，必须为数字');
+    cb(new Error('请输入合同金额，必须为数字'));
   }
 }
 
@@ -60,6 +61,20 @@ const rules = {
     { required: true, message: '请上传文件', trigger: 'blur' },
     { type: 'object', message: '请上传文件', trigger: 'blur' },
   ],
+  startTime: [
+    { required: true, message: '请选择开始时间', trigger: 'blur' },
+  ],
+  endTime: [
+    { required: true, message: '请选择结束时间', trigger: 'blur' },
+  ],
+  process: [
+    { required: true, message: '不能为空' },
+    { type: 'number', message: '进度为数字' },
+  ],
+  stageId: [
+    { required: true, message: '不能为空' },
+    { required: true, message: '请选择阶段' },
+  ],
 };
 
 const state = {
@@ -74,6 +89,11 @@ const state = {
   name: rules.name,
   firstParty: rules.firstParty,
   contractVal: rules.contractVal,
+  contract: rules.contract,
+  startTime: rules.startTime,
+  endTime: rules.endTime,
+  process: rules.process,
+  stageId: rules.stageId,
 };
 
 export default {

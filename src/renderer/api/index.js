@@ -5,8 +5,8 @@ import router from '../router';
 const loading = Loading.service;
 const notify = Notification;
 
-const baseURL = 'http://localhost:3000';
-axios.defaults.baseURL = baseURL;
+const baseUrl = 'http://localhost:3000';
+axios.defaults.baseURL = baseUrl;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 function errorHandler(err) { }
@@ -167,7 +167,16 @@ const projectsApi = {
     get('/projects/options', successCb);
   },
   create(data, successCb) {
-    post2('/projects', successCb);
+    post2('/projects', successCb, data);
+  },
+  getProjectInfo(pid, successCb) {
+    if (pid === '' || pid === undefined) {
+      return;
+    }
+    get(`/projects/${pid}`, successCb);
+  },
+  download(url) {
+    url && get(url);
   },
 };
 //#endregion
@@ -175,4 +184,8 @@ const projectsApi = {
 export default {
   $users: usersApi,
   $projects: projectsApi,
+};
+
+export {
+  baseUrl,
 };

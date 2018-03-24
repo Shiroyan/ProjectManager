@@ -1,18 +1,18 @@
 <template>
   <div id="index__wrapper">
     <div id="left">
-      <el-menu id="side-nav" default-active="/index" :router="true" :collapse="true" active-text-color="#3F51B5">
-        <el-menu-item index="/index" class="nav__item" title="项目">
+      <el-menu id="side-nav" default-active="/" :router="true" :collapse="true" active-text-color="#3F51B5">
+        <el-menu-item index="/" class="nav__item" title="项目">
           <i class="el-icon-my-projects"></i>
           <span slot="title">项目</span>
         </el-menu-item>
-        <el-menu-item index="/index/schedule" class="nav__item" title="日程">
+        <el-menu-item index="/schedule" class="nav__item" title="日程">
           <i class="el-icon-my-schedule"></i>
         </el-menu-item>
-        <el-menu-item index="/index/users" class="nav__item" title="用户组">
+        <el-menu-item index="/users" class="nav__item" title="用户组">
           <i class="el-icon-my-users"></i>
         </el-menu-item>
-        <el-menu-item index="/index/statistics" class="nav__item" title="统计">
+        <el-menu-item index="/statistics" class="nav__item" title="统计">
           <i class="el-icon-my-statistics"></i>
           <span slot="title">统计</span>
         </el-menu-item>
@@ -42,15 +42,13 @@
         </div>
       </el-popover>
       <div id="top-bar">
-        <div id="user__avatar">{{avatar}}</div>
+        <user-avatar id="user__avatar" :username="profile.username" :job="+profile.jobId"></user-avatar>
         <el-button id="user__name" v-popover:profile>{{profile.username}}</el-button>
         <el-button id="refresh" icon="el-icon-refresh" title="刷新页面" @click="refresh"></el-button>
         <el-button id="logout" icon="el-icon-my-logout" title="注销" @click="logout"></el-button>
       </div>
       <transition mode="out-in" name="el-fade-in" :duration="250">
-        <keep-alive>
-          <router-view id="content__wrapper"></router-view>
-        </keep-alive>
+        <router-view id="content__wrapper"></router-view>
       </transition>
     </div>
     <profile-dialog :isVisible.sync="isVisible"></profile-dialog>
@@ -60,15 +58,16 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 import { Popover } from 'element-ui';
-import { getCookie } from '@/utils';
 import Vue from 'vue';
-import ProfileDialog from '../components/ProfileDialog';
+import ProfileDialog from '@/components/ProfileDialog';
+import UserAvatar from '@/components/UserAvatar';
 
 Vue.use(Popover);
 
 export default {
   components: {
     'profile-dialog': ProfileDialog,
+    'user-avatar': UserAvatar,
   },
   data() {
     return {
@@ -77,12 +76,6 @@ export default {
   },
   computed: {
     ...mapState(['profile']),
-    avatar() {
-      if (this.profile.username.length > 2) {
-        return this.profile.username.substr(1);
-      }
-      return this.profile.username;
-    },
   },
   methods: {
     logout() {
@@ -146,15 +139,7 @@ export default {
 }
 
 #user__avatar {
-  @include setSize(36px, 36px);
   margin-right: 15px;
-  border-radius: 18px;
-  background-color: $default;
-  font-size: 14px;
-  font-weight: bold;
-  color: #fff;
-  text-align: center;
-  line-height: 36px;
 }
 
 #content__wrapper {

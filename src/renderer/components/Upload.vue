@@ -1,7 +1,7 @@
 <template>
   <div id="upload__wrapper">
     <span @click="upload" id="upload__btn">
-      {{file === '' ? '点击上传' : '重新上传'}}
+      {{value === '' ? '点击上传' : '重新上传'}}
     </span>
     <input type="file" ref="input" @change="change" id="upload__input" accept=".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
     <span id="upload__filename">{{filename}}</span>
@@ -11,15 +11,15 @@
 
 <script>
 export default {
-  data() {
-    return {
-      file: '',
-    };
+  props: {
+    value: {
+      default: '',
+    },
   },
   computed: {
     filename() {
-      if (this.file) {
-        let name = this.file.name;
+      if (this.value) {
+        let name = this.value.name;
         if (name.length > 8) {
           let reg = /\..+/g;
           let ext = name.match(reg)[0];
@@ -36,8 +36,7 @@ export default {
     },
     change({ target }) {
       let file = target.files[0];
-      this.file = file || '';
-      this.$emit('input', this.file);
+      this.$emit('input', file);
     },
   },
 };

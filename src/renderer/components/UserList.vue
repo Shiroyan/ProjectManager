@@ -4,9 +4,8 @@
       <el-input class="user__search" prefix-icon="el-icon-search" placeholder="输入用户名以搜索" v-model.trim="username"></el-input>
       <div id="user-list">
         <div class="user__item" v-for="u in curList" :key="u.id">
-          <div class="user__avatar">
-            {{u.username.length > 2 ? u.username.substr(1) : u.username}}
-          </div>
+          <user-avatar class="user__avatar" :username="u.username" :job="u.jobId">
+          </user-avatar>
           <div class="user__name">
             {{u.username}}
           </div>
@@ -26,11 +25,13 @@
 
 <script>
 import MemberIcons from './MemberIcons';
+import UserAvatar from './UserAvatar';
 
 export default {
   name: 'UserList',
   components: {
     'member-icons': MemberIcons,
+    'user-avatar': UserAvatar,
   },
   props: {
     isVisible: {
@@ -123,13 +124,6 @@ export default {
   margin-bottom: 10px;
 }
 .user__avatar {
-  @include setSize(36px, 36px);
-  box-sizing: border-box;
-  background-color: $default;
-  border-radius: 18px;
-  color: #fff;
-  text-align: center;
-  line-height: 36px;
   margin-right: 20px;
   float: left;
 }

@@ -17,16 +17,22 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/login',
-    },
-    {
-      path: '/index',
       name: 'Index',
-      component: Index,
+      components: { alive: Index },
       children: [
         {
-          path: '/',
+          path: '',
+          name: 'Projects',
           component: Projects,
+        },
+        {
+          path: 'project/',
+          redirect: '',
+        },
+        {
+          path: 'project/:projectId',
+          name: 'Project',
+          component: Project,
         },
         {
           path: 'schedule',
@@ -58,13 +64,8 @@ export default new Router({
       component: ForgetPwd,
     },
     {
-      path: '/project/:projectId',
-      name: 'Project',
-      component: Project,
-    },
-    {
-      path: '/project',
-      redirect: '/index',
+      path: '/projects',
+      redirect: '/',
     },
     {
       path: '*',

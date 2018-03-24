@@ -29,7 +29,7 @@ export default {
 
 <style lang="scss" scoped>
 .input--sb__content {
-  @include setSize(200px, 30px);
+  @include setSize(100%, 30px);
   box-sizing: border-box;
   padding: 8px;
   border: none;
