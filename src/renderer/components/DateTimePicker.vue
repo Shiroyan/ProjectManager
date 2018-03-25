@@ -6,9 +6,10 @@
 <script>
 export default {
   name: 'DateTimePicker',
+  props: ['value'],
   data() {
     return {
-      val: '',
+      val: this.value,
     };
   },
   watch: {

@@ -18,7 +18,7 @@
       </el-tab-pane>
     </el-tabs>
     <el-button icon="el-icon-circle-plus" id="add-project" @click="isVisible = true">新增项目</el-button>
-    <project-dialog :isVisible.sync="isVisible" @createdProject="createdProject"></project-dialog>
+    <project-dialog v-if="isVisible" :isVisible.sync="isVisible" @createProject="createProject"></project-dialog>
   </div>
 </template>
 
@@ -49,10 +49,15 @@ export default {
         this[propName] = projects;
       });
     },
-    createdProject() {
+    createProject(form) {
       let tab = this.$refs.begin;
-      this.tab = tab.name;
-      this.handleClick(tab);
+      delete form.process;
+      delete form.stageId;
+      this.$api.$projects.create(form, () => {
+        this.isVisible = false;
+        this.tab = tab.name;
+        this.handleClick(tab);
+      });
     },
   },
   beforeRouteEnter(to, from, next) {

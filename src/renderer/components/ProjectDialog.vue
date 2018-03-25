@@ -9,7 +9,7 @@
           <sb-input v-model="projectForm.firstParty" placeholder="甲方 2 - 20个字符" :maxlength="20"></sb-input>
         </el-form-item>
         <el-form-item class="form__item" label="成员" id="members">
-          <member-icons :list="members" @add="addMember" @remove="removeMember"></member-icons>
+          <member-icons :list="projectForm.members" @add="addMember" @remove="removeMember"></member-icons>
         </el-form-item>
         <el-form-item class="form__item" label="合同" id="contract" prop="contract">
           <upload v-model="projectForm.contract"></upload>
@@ -26,17 +26,18 @@
           </el-form-item>
           <el-form-item class="form__item" label="项目阶段" prop="stageId">
             <el-select v-model="projectForm.stageId" placeholder="请选择阶段">
-              <el-option v-for="item in stages.stages" :key="item.id" :label="item.name" :value="item.id">
+              <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
         </template>
       </div>
       <div id="btn-group">
-        <el-button class="btn" type="info" id="create" @click="create('projectForm')">创建</el-button>
+        <el-button class="btn" type="info" id="create" @click="ensure('projectForm')" v-if="mode !== 'edit'">创建</el-button>
+        <el-button class="btn" type="info" id="edit" @click="ensure('projectForm')" v-else>确定</el-button>
       </div>
     </el-form>
-    <user-list :isVisible.sync="innerVisible" :list="users.users" v-model="members"></user-list>
+    <user-list :isVisible.sync="innerVisible" :list="users.users" v-model="projectForm.members"></user-list>
   </el-dialog>
 </template>
 
@@ -66,14 +67,14 @@ export default {
       type: String,
       default: 'create',
     },
-    data: {
+    info: {
       type: Object,
       default() {
         return {
           name: '',
           firstParty: '',
-          contract: '',
-          contractVal: '',
+          contract: { name: '' },
+          contractVal: 0,
           startTime: '',
           endTime: '',
           members: [],
@@ -85,10 +86,8 @@ export default {
   },
   data() {
     return {
-      projectForm: this.data,
       innerVisible: false,
-      timeRange: this.data.startTime ? [this.data.startTime, this.data.endTime] : [],
-      members: this.data.members || [],
+      projectForm: Object.assign({}, this.info),
     };
   },
   computed: {
@@ -97,22 +96,26 @@ export default {
       get() { return this.isVisible; },
       set(newVal) { this.$emit('update:isVisible', newVal); },
     },
-  },
-  watch: {
-    timeRange(newVal, oldVal) {
-      this.projectForm.startTime = newVal[0];
-      this.projectForm.endTime = newVal[1];
+    timeRange: {
+      get() {
+        let { startTime, endTime } = this.projectForm;
+        return startTime ? [startTime, endTime] : [];
+      },
+      set(v) {
+        this.projectForm.startTime = v[0];
+        this.projectForm.endTime = v[1];
+      },
+    },
+    options() {
+      return this.stages.stages;
     },
   },
   methods: {
-    create(formName) {
+    ensure(formName) {
       this.$refs[formName].validate((valid, field) => {
         if (valid) {
-          this.projectForm.members = this.members.join(',');
-          this.$api.$projects.create(this.projectForm, () => {
-            this.$emit('createdProject');
-            this._isVisible = false;
-          });
+          let eventName = this.mode === 'edit' ? 'updateProject' : 'createProject';
+          this.$emit(eventName, this.projectForm);
         } else {
           this.$message({
             type: 'error',
@@ -128,11 +131,11 @@ export default {
       this.innerVisible = true;
     },
     removeMember(id) {
-      this.members = this.members.filter(val => val.id !== id);
+      this.projectForm.members = this.projectForm.members.filter(val => val.id !== id);
     },
     ...mapMutations(['updateUsers', 'updateStages']),
   },
-  mounted() {
+  created() {
     this.users.users.length === 0
       && this.$api.$users.getUsersList(users => this.updateUsers(users));
     this.stages.stages.length === 0
@@ -181,6 +184,8 @@ export default {
 #process {
   .el-slider__input {
     width: 50px;
+    border: none;
+    outline: none;
   }
   .el-slider__runway.show-input {
     margin-right: 60px;

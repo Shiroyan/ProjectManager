@@ -9,7 +9,7 @@
           <p id="info__start-end" class="info__item">{{info.startTime}} ~ {{info.endTime}}</p>
           <div class="info__item">
             <div class="info__label">合同</div>
-            <a id="info__contract" :href="`${baseUrl}${info.contract}`">附件</a>
+            <a id="info__contract" :href="`${baseUrl}${info.contract.url}`">附件</a>
             <div class="info__label">合同金额</div>
             <span id="info__contract-val">{{info.contractVal}}</span>
           </div>
@@ -43,18 +43,22 @@
       </el-tab-pane>
       <el-tab-pane label="Q & A" name="bugs" disabled>
       </el-tab-pane>
-    </el-tabs>>
+    </el-tabs>
+    <project-dialog v-if="isVisible" mode="edit" :isVisible.sync="isVisible" :info="info" @updateProject="updateProject"></project-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
-import { baseUrl } from '@/api';
+import ProjectDialog from '@/components/ProjectDialog';
+import { baseUrl } from '@/api';  // eslint-disable-line
+import api from '@/api';  // eslint-disable-line
 
 export default {
   components: {
     'user-avatar': UserAvatar,
+    'project-dialog': ProjectDialog,
   },
   data() {
     return {
@@ -73,6 +77,7 @@ export default {
         stageName: '',
       },
       baseUrl,
+      isVisible: false,
     };
   },
   computed: mapState(['profile']),
@@ -87,14 +92,36 @@ export default {
 
     },
     edit() {
-
+      this.isVisible = true;
+    },
+    updateProject(form) {
+      form.members = form.members.map(u => u.id).join(',');
+      if (!(form.contract instanceof File)) {
+        delete form.contract;
+      }
+      form.leaderId = form.leader.id;
+      this.$api.$projects.update(this.projectId, form, () => {
+        this.isVisible = false;
+        this.$api.$projects.getProjectInfo(this.projectId, (info) => {
+          info.contract = { name: `${info.name}.doc`, url: info.contract };
+          this.info = info;
+        });
+      });
     },
   },
-  created() {
-    this.projectId = this.$route.params.projectId;
-    this.$api.$projects.getProjectInfo(this.projectId, (data) => {
-      this.info = data;
-    });
+  beforeRouteEnter(to, from, next) {
+    let projectId = to.params.projectId;
+    if (projectId === undefined || projectId === 'undefined' || projectId === '') {
+      next(vm => vm.$router.push('/'));
+    } else {
+      api.$projects.getProjectInfo(projectId, (info) => {
+        next((vm) => {
+          vm.projectId = projectId;
+          info.contract = { name: `${info.name}.doc`, url: info.contract };
+          vm.info = info;
+        });
+      });
+    }
   },
 };
 </script>

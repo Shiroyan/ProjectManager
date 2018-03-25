@@ -170,13 +170,13 @@ const projectsApi = {
     post2('/projects', successCb, data);
   },
   getProjectInfo(pid, successCb) {
-    if (pid === '' || pid === undefined) {
-      return;
-    }
     get(`/projects/${pid}`, successCb);
   },
   download(url) {
     url && get(url);
+  },
+  update(pid, data, successCb) {
+    put(`/projects/${pid}`, successCb, data);
   },
 };
 //#endregion

@@ -44,13 +44,15 @@ export default {
     },
     bgColor() {
       let bgColor = colors[this.job];
+      this.$refs.userAvatar && (this.$refs.userAvatar.style.backgroundColor = bgColor);
       return bgColor;
     },
   },
-  watch: {
-    bgColor(newVal, oldVal) {
-      this.$refs.userAvatar.style.backgroundColor = newVal;
-    },
+  updated() {
+    this.$refs.userAvatar.style.backgroundColor = this.bgColor;
+  },
+  mounted() {
+    this.$refs.userAvatar.style.backgroundColor = this.bgColor;
   },
 };
 </script>

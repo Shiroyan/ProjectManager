@@ -40,7 +40,7 @@ export default {
     },
     list: {
       type: Array,
-      required: true,
+      default: [],
     },
   },
   data() {
