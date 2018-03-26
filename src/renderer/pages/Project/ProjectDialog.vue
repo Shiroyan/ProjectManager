@@ -43,11 +43,11 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
-import SBInput from './SBInput';
-import MemberIcons from './MemberIcons';
-import UserList from './UserList';
-import Upload from './Upload';
-import DateTimePicker from './DateTimePicker';
+import SBInput from '@/components/SBInput';
+import MemberIcons from '@/components/MemberIcons';
+import UserList from '@/components/UserList';
+import Upload from '@/components/Upload';
+import DateTimePicker from '@/components/DateTimePicker';
 
 export default {
   name: 'ProjectDialog',

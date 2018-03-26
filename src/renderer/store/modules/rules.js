@@ -75,6 +75,10 @@ const rules = {
     { required: true, message: '不能为空' },
     { required: true, message: '请选择阶段' },
   ],
+  planName: [
+    { required: true, message: '请输入计划名', trigger: 'blur' },
+    { min: 3, max: 10, message: '长度3-10个字符', trigger: 'blur' },
+  ],
 };
 
 const state = {
@@ -94,6 +98,7 @@ const state = {
   endTime: rules.endTime,
   process: rules.process,
   stageId: rules.stageId,
+  planName: rules.planName,
 };
 
 export default {

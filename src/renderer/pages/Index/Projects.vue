@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import ProjectCard from '@/components/ProjectCard';
-import ProjectDialog from '@/components/ProjectDialog';
+import ProjectDialog from '@/pages/Project/ProjectDialog';
+import ProjectCard from './Projects/ProjectCard';
 
 export default {
   name: 'Projects',
@@ -45,15 +45,16 @@ export default {
     handleClick(tab, event) {
       let type = tab.name;
       let propName = `projects${type}`;
-      this.$api.$projects.getAllProjects(type, ({ projects }) => {
+      this.$api.$projects.getAllProjects(type, (projects) => {
         this[propName] = projects;
       });
     },
     createProject(form) {
       let tab = this.$refs.begin;
-      delete form.process;
-      delete form.stageId;
-      this.$api.$projects.create(form, () => {
+      let data = Object.assign({}, form);
+      delete data.process;
+      delete data.stageId;
+      this.$api.$projects.create(data, () => {
         this.isVisible = false;
         this.tab = tab.name;
         this.handleClick(tab);
@@ -62,7 +63,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.$api.$projects.getAllProjects(1, ({ projects }) => {
+      vm.$api.$projects.getAllProjects(1, (projects) => {
         vm.projects1 = projects;
       });
     });

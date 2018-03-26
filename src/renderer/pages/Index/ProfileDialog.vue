@@ -28,8 +28,8 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
-import MyInput from './Input';
-import MySelect from './Select';
+import MyInput from '@/components/Input';
+import MySelect from '@/components/Select';
 
 export default {
   name: 'ProfileDialog',

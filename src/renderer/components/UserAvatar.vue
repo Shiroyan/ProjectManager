@@ -1,5 +1,5 @@
 <template>
-  <div class="user__avatar" ref="userAvatar">
+  <div class="user__avatar" :style="style">
     {{_username}}
     <slot name="mask"></slot>
   </div>
@@ -28,6 +28,7 @@ const colors = [
 ];
 
 export default {
+  name: 'UserAvatar',
   props: {
     username: {
       type: String,
@@ -35,24 +36,18 @@ export default {
     },
     job: {
       type: Number,
-      required: true,
+      default: 0,
     },
   },
   computed: {
     _username() {
       return this.username.length > 2 ? this.username.substr(1) : this.username;
     },
-    bgColor() {
-      let bgColor = colors[this.job];
-      this.$refs.userAvatar && (this.$refs.userAvatar.style.backgroundColor = bgColor);
-      return bgColor;
+    style() {
+      return {
+        backgroundColor: colors[this.job],
+      };
     },
-  },
-  updated() {
-    this.$refs.userAvatar.style.backgroundColor = this.bgColor;
-  },
-  mounted() {
-    this.$refs.userAvatar.style.backgroundColor = this.bgColor;
   },
 };
 </script>

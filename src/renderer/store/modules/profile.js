@@ -22,6 +22,8 @@ const mutations = {
     state.jobId = jobId;
     state.jobName = jobName;
     state.role = role;
+    state.isPM = jobId === 5 || role === 0;
+    state.isAdmin = role === 0;
   },
 };
 

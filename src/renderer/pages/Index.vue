@@ -59,8 +59,8 @@
 import { mapState, mapMutations } from 'vuex';
 import { Popover } from 'element-ui';
 import Vue from 'vue';
-import ProfileDialog from '@/components/ProfileDialog';
 import UserAvatar from '@/components/UserAvatar';
+import ProfileDialog from './Index/ProfileDialog';
 
 Vue.use(Popover);
 

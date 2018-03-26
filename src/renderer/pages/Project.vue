@@ -3,8 +3,8 @@
     <el-tabs v-model="tab" @tab-click="handleClick" id="project__wrapper">
       <el-tab-pane label="基本信息" name="info">
         <div id="info__wrapper">
-          <el-button type="danger" icon="el-icon-delete" id="delete" v-if="profile.role===0 || profile.role===1" @click="del">删除</el-button>
-          <el-button icon="el-icon-edit" id="edit" v-if="profile.role===0 || profile.role===1" @click="edit">编辑</el-button>
+          <el-button type="danger" icon="el-icon-delete" id="delete" v-if="profile.isPM" @click="isDelVisible = true">删除</el-button>
+          <el-button icon="el-icon-edit" id="edit" v-if="profile.isPM" @click="isEditVisible = true">编辑</el-button>
           <div id="info__name" class="info__item">{{info.name}}</div>
           <p id="info__start-end" class="info__item">{{info.startTime}} ~ {{info.endTime}}</p>
           <div class="info__item">
@@ -38,27 +38,42 @@
       </el-tab-pane>
       <el-tab-pane label="计划" name="plans">
         <div id="plans__container">
-          <div class="plan__wrapper"></div>
+          <plan v-for="p in plans" :key="p.id" :plan="p" @editPlan="editPlan" @deletePlan="deletePlan"></plan>
+          <transition-group mode="out-in" name="el-fade-in">
+            <el-button id="add-plan-btn" icon="el-icon-plus" plain v-if="profile.isPM && !isAddPlan" @click="isAddPlan=true" key="button">新增计划</el-button>
+            <div id="add-plan__form" v-if="isAddPlan" key="form">
+              <input id="add-plan__input" placeholder="计划名, 3-10个字符" v-model="planName">
+              <div id="add-plan__btn-group">
+                <el-button id="cancel" type="text" size="mini" @click="isAddPlan=false">取消</el-button>
+                <el-button id="add" type="text" size="mini" @click="addPlan">确定</el-button>
+              </div>
+            </div>
+          </transition-group>
         </div>
       </el-tab-pane>
       <el-tab-pane label="Q & A" name="bugs" disabled>
       </el-tab-pane>
     </el-tabs>
-    <project-dialog v-if="isVisible" mode="edit" :isVisible.sync="isVisible" :info="info" @updateProject="updateProject"></project-dialog>
+    <project-dialog v-if="isEditVisible" mode="edit" :isVisible.sync="isEditVisible" :info="info" @updateProject="updateProject"></project-dialog>
+    <del-project-dialog :isVisible.sync="isDelVisible" :projectName="info.name" @deleteProject="deleteProject"></del-project-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
-import ProjectDialog from '@/components/ProjectDialog';
 import { baseUrl } from '@/api';  // eslint-disable-line
 import api from '@/api';  // eslint-disable-line
+import ProjectDialog from './Project/ProjectDialog';
+import DelProjectDialog from './Project/DelProjectDialog';
+import Plan from './Project/Plan';
 
 export default {
   components: {
     'user-avatar': UserAvatar,
     'project-dialog': ProjectDialog,
+    'del-project-dialog': DelProjectDialog,
+    plan: Plan,
   },
   data() {
     return {
@@ -76,37 +91,83 @@ export default {
         process: 0,
         stageName: '',
       },
+      plans: [],
       baseUrl,
-      isVisible: false,
+      isEditVisible: false,
+      isDelVisible: false,
+      isAddPlan: false,
+      planName: '',
     };
   },
   computed: mapState(['profile']),
   methods: {
-    handleClick(tab, name) {
-
+    handleClick(tab, event) {
+      let { name } = tab;
+      switch (name) {
+        case 'info':
+          this.getProjectInfo(); break;
+        case 'plans':
+          this.getPlans(); break;
+        default:
+      }
     },
     getPlans() {
-
+      this.$api.$plans.all(this.projectId, (plans) => {
+        this.plans = plans;
+      });
     },
-    del() {
-
-    },
-    edit() {
-      this.isVisible = true;
+    deleteProject() {
+      this.$api.$projects.delete(this.projectId, () => {
+        this.$router.push('/');
+        this.isDelVisible = false;
+      });
     },
     updateProject(form) {
-      form.members = form.members.map(u => u.id).join(',');
-      if (!(form.contract instanceof File)) {
-        delete form.contract;
+      let data = Object.assign({}, form);
+      data.members = data.members.map(u => u.id).join(',');
+      if (!(data.contract instanceof File)) {
+        delete data.contract;
       }
-      form.leaderId = form.leader.id;
-      this.$api.$projects.update(this.projectId, form, () => {
-        this.isVisible = false;
-        this.$api.$projects.getProjectInfo(this.projectId, (info) => {
-          info.contract = { name: `${info.name}.doc`, url: info.contract };
-          this.info = info;
-        });
+      data.leaderId = data.leader.id;
+      this.$api.$projects.update(this.projectId, data, () => {
+        this.isEditVisible = false;
+        this.getProjectInfo();
       });
+    },
+    getProjectInfo() {
+      this.$api.$projects.getProjectInfo(this.projectId, (info) => {
+        info.contract = { name: `${info.name}.doc`, url: info.contract };
+        this.info = info;
+      });
+    },
+    addPlan() {
+      let len = this.planName.length;
+      if (len < 3 || len > 10) {
+        this.$message.error({ message: '字符3-10个', center: true });
+      } else {
+        this.isAddPlan = false;
+        this.$api.$plans.add({
+          name: this.planName,
+          projectId: this.projectId,
+        }, () => {
+          this.getPlans();
+        });
+      }
+    },
+    editPlan(id, form) {
+      this.$api.$plans.update(id, {
+        projectId: this.projectId,
+        name: form.planName,
+        process: form.process,
+      }, () => {
+        this.getPlans();
+      });
+    },
+    deletePlan(planId) {
+      this.$api.$plans.delete(planId, { projectId: this.projectId },
+        () => {
+          this.getPlans();
+        });
     },
   },
   beforeRouteEnter(to, from, next) {
@@ -194,11 +255,68 @@ export default {
 }
 #plans__container {
   margin-top: 54px;
+  height: 624px;
+  white-space: nowrap;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    width: 16px;
+    height: 8px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 8px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 6px #eee;
+    background-color: #BBB;
+  }
 }
-.plan__wrapper {
-  @include setSize(250px, 610px);
+#add-plan-btn {
+  @include setSize(250px, 40px);
   background-color: #eee;
+  border: none;
+  color: $black;
+  font-size: 13px;
+  margin-right: 20px;
+  &:hover {
+    border: none;
+  }
+}
+#add-plan__form {
+  @include setSize(250px, 120px);
+  background-color: #eee;
+  border: 1px solid #eee;
   border-radius: 5px;
+  text-align: center;
+  padding-top: 20px;
+}
+#add-plan__input {
+  @include setSize(200px, 32px);
+  border: none;
+  border-bottom: 2px solid $tips;
+  background-color: #eee;
+  box-sizing: border-box;
+  font-size: 14px;
+  padding: 9px;
+  outline: none;
+  margin-bottom: 40px;
+  &:focus {
+    border-bottom-color: $default;
+  }
+}
+#add-plan__btn-group {
+  text-align: center;
+}
+#add {
+  margin-left: 20px;
+  color: $default;
+}
+#cancel {
+  color: $black;
 }
 </style>
 

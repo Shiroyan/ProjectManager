@@ -178,12 +178,33 @@ const projectsApi = {
   update(pid, data, successCb) {
     put(`/projects/${pid}`, successCb, data);
   },
+  delete(pid, successCb) {
+    $delete(`/projects/${pid}`, successCb);
+  },
+};
+//#endregion
+
+//#region 计划接口
+const plansApi = {
+  all(pid, successCb) {
+    get(`plans?projectId=${pid}`, successCb);
+  },
+  add(data, successCb) {
+    post('plans', successCb, data);
+  },
+  update(planId, data, successCb) {
+    put(`/plans/${planId}`, successCb, data);
+  },
+  delete(planId, data, successCb) {
+    $delete(`/plans/${planId}`, successCb, data);
+  },
 };
 //#endregion
 
 export default {
   $users: usersApi,
   $projects: projectsApi,
+  $plans: plansApi,
 };
 
 export {
