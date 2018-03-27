@@ -1,5 +1,5 @@
 <template>
-  <el-dialog custom-class="user-list__wrapper" :visible.sync="_isVisible" width="26.427vw" title="添加新成员" center append-to-body>
+  <el-dialog custom-class="user-list__wrapper" :visible.sync="_isVisible" width="26.427vw" title="添加新成员" center :append-to-body="appendToBody">
     <div style="text-align: -webkit-center">
       <el-input class="user__search" prefix-icon="el-icon-search" placeholder="输入用户名以搜索" v-model.trim="username"></el-input>
       <div id="user-list">
@@ -42,11 +42,19 @@ export default {
       type: Array,
       default: [],
     },
+    value: {
+      type: Array,
+      default: [],
+    },
+    appendToBody: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
       username: '',
-      addedUser: [],
+      addedUser: this.value.slice(0),
     };
   },
   computed: {

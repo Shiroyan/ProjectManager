@@ -201,10 +201,19 @@ const plansApi = {
 };
 //#endregion
 
+//#region 事件接口
+const eventsApi = {
+  getTags(successCb) {
+    get('/events/tags', successCb);
+  },
+};
+//#endregion
+
 export default {
   $users: usersApi,
   $projects: projectsApi,
   $plans: plansApi,
+  $events: eventsApi,
 };
 
 export {

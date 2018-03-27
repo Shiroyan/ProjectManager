@@ -50,6 +50,7 @@
             </div>
           </transition-group>
         </div>
+        <p class="handle-tips">* 按下Shift + 滑轮 进行左右滑动</p>
       </el-tab-pane>
       <el-tab-pane label="Q & A" name="bugs" disabled>
       </el-tab-pane>
@@ -60,7 +61,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
 import { baseUrl } from '@/api';  // eslint-disable-line
 import api from '@/api';  // eslint-disable-line
@@ -99,15 +100,18 @@ export default {
       planName: '',
     };
   },
-  computed: mapState(['profile']),
+  computed: mapState(['profile', 'tags', 'users']),
   methods: {
+    ...mapMutations(['updateTags', 'updateUsers']),
     handleClick(tab, event) {
       let { name } = tab;
       switch (name) {
         case 'info':
           this.getProjectInfo(); break;
         case 'plans':
-          this.getPlans(); break;
+          this.getPlans();
+          this.getTags();
+          break;
         default:
       }
     },
@@ -138,6 +142,11 @@ export default {
       this.$api.$projects.getProjectInfo(this.projectId, (info) => {
         info.contract = { name: `${info.name}.doc`, url: info.contract };
         this.info = info;
+      });
+    },
+    getTags() {
+      this.tags.tags.length === 0 && this.$api.$events.getTags((tags) => {
+        this.updateTags(tags);
       });
     },
     addPlan() {
@@ -175,14 +184,17 @@ export default {
     if (projectId === undefined || projectId === 'undefined' || projectId === '') {
       next(vm => vm.$router.push('/'));
     } else {
-      api.$projects.getProjectInfo(projectId, (info) => {
-        next((vm) => {
-          vm.projectId = projectId;
-          info.contract = { name: `${info.name}.doc`, url: info.contract };
-          vm.info = info;
-        });
-      });
+      next();
     }
+  },
+  mounted() {
+    this.projectId = this.$route.params.projectId;
+    api.$projects.getProjectInfo(this.projectId, (info) => {
+      info.contract = { name: `${info.name}.doc`, url: info.contract };
+      this.info = info;
+    });
+    this.users.users.length === 0
+      && this.$api.$users.getUsersList(users => this.updateUsers(users));
   },
 };
 </script>
@@ -253,26 +265,18 @@ export default {
 #info__progress {
   width: 180px;
 }
+</style>
+<style lang="scss" scoped>
 #plans__container {
-  margin-top: 54px;
-  height: 624px;
+  margin-top: 44px;
   white-space: nowrap;
+  height: 78vh;
+  overflow: hidden;
   overflow-x: auto;
   &::-webkit-scrollbar {
-    width: 16px;
-    height: 8px;
+    width: 0;
+    height: 0;
     background-color: #f5f5f5;
-  }
-  &::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    background-color: #f5f5f5;
-  }
-  &::-webkit-scrollbar-thumb {
-    height: 8px;
-    border-radius: 4px;
-    box-shadow: inset 0 0 6px #eee;
-    background-color: #BBB;
   }
 }
 #add-plan-btn {
@@ -317,6 +321,11 @@ export default {
 }
 #cancel {
   color: $black;
+}
+.handle-tips {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: $danger;
 }
 </style>
 

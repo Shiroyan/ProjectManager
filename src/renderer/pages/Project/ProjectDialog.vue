@@ -21,12 +21,12 @@
           <date-time-picker v-model="timeRange"></date-time-picker>
         </el-form-item>
         <template v-if="mode === 'edit'">
-          <el-form-item class="form__item" label="进度" prop="process">
+          <el-form-item class="form__item" label="进度">
             <el-slider id="process" v-model="projectForm.process" show-input :show-input-controls="false" input-size="mini"></el-slider>
           </el-form-item>
-          <el-form-item class="form__item" label="项目阶段" prop="stageId">
+          <el-form-item class="form__item" label="项目阶段">
             <el-select v-model="projectForm.stageId" placeholder="请选择阶段">
-              <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id">
+              <el-option v-for="item in stages.stages" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -87,7 +87,7 @@ export default {
   data() {
     return {
       innerVisible: false,
-      projectForm: Object.assign({}, this.info),
+      projectForm: this.info,
     };
   },
   computed: {
@@ -105,9 +105,6 @@ export default {
         this.projectForm.startTime = v[0];
         this.projectForm.endTime = v[1];
       },
-    },
-    options() {
-      return this.stages.stages;
     },
   },
   methods: {
