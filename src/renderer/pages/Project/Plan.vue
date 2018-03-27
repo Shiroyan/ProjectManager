@@ -42,30 +42,25 @@
           <el-form-item class="form__item" prop="desc" label="事件内容">
             <el-input type="textarea" :rows="3" placeholder="0 - 200个字符" v-model="eventForm.desc" resize="none"></el-input>
           </el-form-item>
-          <el-form-item class="form__item" label="成员">
+          <el-form-item class="form__item" label="成员" prop="members">
             <member-icons :list="eventForm.members" @add="isShowUserList = true" @remove="removeMember"></member-icons>
           </el-form-item>
-          <el-form-item class="form__item" label="起止时间">
-            <el-date-picker 
-            v-model="eventForm.startEnd" 
-            type="datetimerange" 
-            range-separator="至" 
-            start-placeholder="开始日期" 
-            end-placeholder="结束日期">
-            </el-date-picker>
+          <el-form-item class="form__item" label="起止时间" prop="startEnd">
+            <date-time-picker id="time-range" v-model="eventForm.startEnd" :pickerOptions="pickerOptions"></date-time-picker>
           </el-form-item>
-          <el-form-item class="form__item" label="计划时间">
+          <el-form-item class="form__item" label="计划时间" prop="planTime">
             <el-input-number v-model="eventForm.planTime" size="mini" :controls="false"></el-input-number>
           </el-form-item>
-          <el-form-item class="form__item" label="标签">
+          <el-form-item class="form__item" label="标签" prop="tags">
+            <tag v-model="eventForm.tags"></tag>
           </el-form-item>
         </el-form>
       </div>
       <div class="dialog__footer">
         <el-button type="text" id="add__cancel" @click="isAddEvent = false">取消</el-button>
-        <el-button type="text" id="add__ensure">创建</el-button>
+        <el-button type="text" id="add__ensure" @click="create">创建</el-button>
       </div>
-      <user-list :isVisible.sync="isShowUserList" :list="users.users" v-model="eventForm.members" :appendToBody="false"></user-list>
+      <user-list :isVisible.sync="isShowUserList" :list="userList" v-model="eventForm.members" :appendToBody="false"></user-list>
     </div>
   </div>
 </template>
@@ -76,8 +71,11 @@ import { Popover } from 'element-ui';
 import SBInput from '@/components/SBInput';
 import MemberIcons from '@/components/MemberIcons';
 import UserList from '@/components/UserList';
+import DateTimePicker from '@/components/DateTimePicker';
+import { date } from '@/utils';
 import Vue from 'vue';
 import Event from './Event';
+import Tags from './Tags';
 Vue.use(Popover);
 
 export default {
@@ -87,6 +85,8 @@ export default {
     'sb-input': SBInput,
     'member-icons': MemberIcons,
     'user-list': UserList,
+    'date-time-picker': DateTimePicker,
+    tag: Tags,
   },
   props: {
     plan: {
@@ -99,6 +99,10 @@ export default {
           events: [],
         };
       },
+    },
+    userList: {
+      type: Array,
+      default: [],
     },
   },
   data() {
@@ -120,11 +124,19 @@ export default {
         tags: [],
         startEnd: [],
       },
-      time: [],
+      pickerOptions: {
+        firstDayOfWeek: 1,
+        disabledDate(time) {
+          let cur = time.getTime();
+          let monday = date.getWeekStart();
+          let sunday = date.getWeekEnd();
+          return cur > sunday || cur < monday;
+        },
+      },
     };
   },
   computed: {
-    ...mapState(['profile', 'rules', 'tags', 'users']),
+    ...mapState(['profile', 'rules', 'tags']),
     progress() {
       return {
         width: `${this.plan.process}%`,
@@ -146,6 +158,17 @@ export default {
     },
     removeMember(id) {
       this.eventForm.members = this.eventForm.members.filter(val => val.id !== id);
+    },
+    create() {
+      this.$refs.eventForm.validate((valid) => {
+        if (valid) {
+          this.eventForm.planId = this.plan.id;
+          this.$emit('createEvent', Object.assign({}, this.eventForm));
+          this.isAddEvent = false;
+        } else {
+          this.$message.error({ message: '请检查格式', center: true });
+        }
+      });
     },
   },
 };
@@ -258,13 +281,15 @@ export default {
   box-sizing: border-box;
   border-radius: 5px;
   background-color: #fff;
-  padding: 11px;
+  padding: 11px 11px 5px 11px;
   .form__item {
-    padding-bottom: 8px;
+    padding-bottom: 20px;
+    margin-bottom: 5px;
     width: 100%;
     border-bottom: 1px solid #ddd;
   }
   .dialog__footer {
+    margin-top: 10px 0 0 0;
     text-align: right;
   }
 }
@@ -312,6 +337,12 @@ export default {
   }
   .el-input-number--mini {
     width: 60px;
+  }
+  .el-range-editor.el-input__inner {
+    width: 100% !important;
+  }
+  .el-range-input {
+    font-size: 12px;
   }
 }
 </style>

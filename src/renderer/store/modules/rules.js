@@ -79,6 +79,23 @@ const rules = {
     { required: true, message: '请输入计划名', trigger: 'blur' },
     { min: 3, max: 10, message: '长度3-10个字符', trigger: 'blur' },
   ],
+  desc: [
+    { required: true, message: '请输入事件内容', trigger: 'blur' },
+    { max: 200, message: '不得超过200个字符', trigger: 'blur' },
+  ],
+  members: [
+    { type: 'array', min: 1, message: '至少要有1个成员负责' },
+  ],
+  startEnd: [
+    { type: 'array', min: 2, message: '请选择起止时间' },
+  ],
+  planTime: [
+    { required: true, message: '不能为空' },
+    { type: 'number', message: '进度为数字' },
+  ],
+  tags: [
+    { type: 'array', min: 1, message: '请至少选择一个标签' },
+  ],
 };
 
 const state = {
@@ -99,6 +116,11 @@ const state = {
   process: rules.process,
   stageId: rules.stageId,
   planName: rules.planName,
+  desc: rules.desc,
+  members: rules.members,
+  startEnd: rules.startEnd,
+  planTime: rules.planTime,
+  tags: rules.tags,
 };
 
 export default {

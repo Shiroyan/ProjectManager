@@ -132,7 +132,7 @@ export default {
     },
     ...mapMutations(['updateUsers', 'updateStages']),
   },
-  created() {
+  mounted() {
     this.users.users.length === 0
       && this.$api.$users.getUsersList(users => this.updateUsers(users));
     this.stages.stages.length === 0

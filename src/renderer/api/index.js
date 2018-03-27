@@ -206,6 +206,9 @@ const eventsApi = {
   getTags(successCb) {
     get('/events/tags', successCb);
   },
+  create(data, successCb) {
+    post('/events', successCb, data);
+  },
 };
 //#endregion
 

@@ -38,7 +38,7 @@
       </el-tab-pane>
       <el-tab-pane label="计划" name="plans">
         <div id="plans__container">
-          <plan v-for="p in plans" :key="p.id" :plan="p" @editPlan="editPlan" @deletePlan="deletePlan"></plan>
+          <plan v-for="p in plans" :key="p.id" :userList="userList" :plan="p" @editPlan="editPlan" @deletePlan="deletePlan" @createEvent="createEvent"></plan>
           <transition-group mode="out-in" name="el-fade-in">
             <el-button id="add-plan-btn" icon="el-icon-plus" plain v-if="profile.isPM && !isAddPlan" @click="isAddPlan=true" key="button">新增计划</el-button>
             <div id="add-plan__form" v-if="isAddPlan" key="form">
@@ -100,7 +100,14 @@ export default {
       planName: '',
     };
   },
-  computed: mapState(['profile', 'tags', 'users']),
+  computed: {
+    ...mapState(['profile', 'tags', 'users']),
+    userList() {
+      let members = Array.from(this.info.members);
+      members.push(this.info.leader);
+      return members;
+    },
+  },
   methods: {
     ...mapMutations(['updateTags', 'updateUsers']),
     handleClick(tab, event) {
@@ -177,6 +184,17 @@ export default {
         () => {
           this.getPlans();
         });
+    },
+    createEvent(data) {
+      data.projectId = this.projectId;
+      data.startTime = data.startEnd[0];
+      data.endTime = data.startEnd[1];
+      data.members = data.members.map(u => u.id).join(',');
+      data.tags = data.tags.map(t => t.id).join(',');
+      delete data.startEnd;
+      this.$api.$events.create(data, () => {
+        this.getPlans();
+      });
     },
   },
   beforeRouteEnter(to, from, next) {

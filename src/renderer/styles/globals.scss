@@ -3,7 +3,7 @@
 @import "~@/styles/icons.scss";
 @import "~@/styles/element-variables.scss";
 @import "~@/styles/font.scss";
-$default: #3F51B5;
+$default: #3f51b5;
 $primary: #20a0ff;
 $success: #259B24;
 $warning: #FF9800;
@@ -118,4 +118,8 @@ html {
 
 .el-dialog__wrapper {
   overflow: hidden;
+}
+
+.el-form-item__error {
+  font-size: 11px;
 }

@@ -20,6 +20,7 @@ const colors = [
   '#f50057', //..UX
   '#f50057', //..UI
   '#ff9800', //..MKT
+  '#1a237e', //..OPR
 ];
 
 export default {

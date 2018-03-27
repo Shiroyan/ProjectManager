@@ -1,15 +1,5 @@
 <template>
-  <el-date-picker id="start-end-range" 
-    v-model="_value" 
-    type="datetimerange"
-    align="center"
-    start-placeholder="开始日期"
-    end-placeholder="结束日期"
-    format="yyyy-MM-dd" 
-    range-separator="~" 
-    value-format="yyyy-MM-dd hh:mm:ss"
-    :default-time="['8:00:00', '23:59:59']"
-    :picker-options="{firstDayOfWeek: 1}">
+  <el-date-picker id="start-end-range" v-model="_value" type="datetimerange" align="center" start-placeholder="开始日期" end-placeholder="结束日期" format="yyyy-MM-dd" range-separator="~" value-format="yyyy-MM-dd hh:mm:ss" :default-time="['8:00:00', '23:59:59']" :picker-options="pickerOptions">
   </el-date-picker>
 </template>
 
@@ -20,6 +10,14 @@ export default {
     value: {
       type: Array,
       default: [],
+    },
+    pickerOptions: {
+      type: Object,
+      default() {
+        return {
+          firstDayOfWeek: 1,
+        };
+      },
     },
   },
   computed: {
