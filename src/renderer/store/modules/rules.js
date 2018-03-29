@@ -21,6 +21,15 @@ function valiContractVal(rule, value, cb) {
     cb(new Error('请输入合同金额，必须为数字'));
   }
 }
+function valiRatio(rule, value, cb) {
+  value = +value;
+  if (value) {
+    if (value < 0 || value > 2) {
+      cb(new Error('系数范围0 ~ 2'));
+    }
+    cb();
+  }
+}
 
 const rules = {
   account: [
@@ -67,10 +76,6 @@ const rules = {
   endTime: [
     { required: true, message: '请选择结束时间', trigger: 'blur' },
   ],
-  process: [
-    { required: true, message: '不能为空' },
-    { type: 'number', message: '进度为数字' },
-  ],
   stageId: [
     { required: true, message: '不能为空' },
     { required: true, message: '请选择阶段' },
@@ -84,17 +89,23 @@ const rules = {
     { max: 200, message: '不得超过200个字符', trigger: 'blur' },
   ],
   members: [
-    { type: 'array', min: 1, message: '至少要有1个成员负责' },
+    { required: true, type: 'array', min: 1, message: '至少要有1个成员负责' },
   ],
   startEnd: [
-    { type: 'array', min: 2, message: '请选择起止时间' },
+    { required: true, type: 'array', min: 2, message: '请选择起止时间' },
   ],
   planTime: [
     { required: true, message: '不能为空' },
     { type: 'number', message: '进度为数字' },
   ],
   tags: [
-    { type: 'array', min: 1, message: '请至少选择一个标签' },
+    { required: true, type: 'array', min: 1, message: '请至少选择一个标签' },
+  ],
+  process: [
+    { required: true, type: 'number', message: '请设置进度' },
+  ],
+  ratio: [
+    { required: true, type: 'number', message: '请设置系数' },
   ],
 };
 
@@ -120,6 +131,9 @@ const state = {
   members: rules.members,
   startEnd: rules.startEnd,
   planTime: rules.planTime,
+  realTime: rules.planTime,
+  approval: rules.planTime,
+  ratio: rules.ratio,
   tags: rules.tags,
 };
 

@@ -1,6 +1,6 @@
 <template>
   <div id="tag-list__wrapper">
-    <el-tag class="tag" :key="tag.id" v-for="tag in _tags" closable size="mini" :color="colors[tag.id]" :disable-transitions="false" @close="remove(tag.id)">
+    <el-tag class="tag" :key="tag.id" v-for="tag in _tags" :closable="showAdd" size="mini" :color="colors[tag.id]" :disable-transitions="false" @close="remove(tag.id)">
       {{tag.name}}
     </el-tag>
     <el-popover ref="tagList" placement="right">
@@ -8,7 +8,7 @@
         <div v-for="t in tags.tags" :key="t.id" class="tag-list__tag" @click="add(t)" :style="{ backgroundColor: colors[t.id]}">{{t.name}}</div>
       </div>
     </el-popover>
-    <el-button class="add-btn" type="text" icon="el-icon-circle-plus" size="small" v-popover:tagList></el-button>
+    <el-button class="add-btn" type="text" icon="el-icon-circle-plus" size="small" v-popover:tagList v-if="showAdd"></el-button>
   </div>
 </template>
 
@@ -20,6 +20,10 @@ export default {
     value: {
       type: Array,
       default: [],
+    },
+    showAdd: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

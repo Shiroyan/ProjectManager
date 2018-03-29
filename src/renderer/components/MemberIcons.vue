@@ -2,7 +2,7 @@
   <div class="member-icons__wrapper">
     <transition-group mode="out-in" name="el-fade-in" :duration="250">
       <user-avatar class="member-icon" v-for="m in list" :key="m.id" :username="m.username" :job="m.jobId">
-        <div slot="mask" class="op__remove" @click="$emit('remove', m.id)">
+        <div slot="mask" class="op__remove" @click="$emit('remove', m.id)" v-if="showRemove">
           <i class="el-icon-minus"></i>
         </div>
       </user-avatar>
@@ -27,6 +27,10 @@ export default {
       default: [],
     },
     showAdd: {
+      type: Boolean,
+      default: true,
+    },
+    showRemove: {
       type: Boolean,
       default: true,
     },

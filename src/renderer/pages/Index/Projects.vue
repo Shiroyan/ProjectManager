@@ -1,24 +1,26 @@
 <template>
-  <div id="projects__wrapper">
-    <el-tabs v-model="tab" @tab-click="handleClick">
-      <el-tab-pane label="进行中" name="1">
-        <h2 v-if="projects1.length===0" class="no-data-tips">暂无数据</h2>
-        <project-card v-for="project in projects1" :key="project.id" :data="project">
-        </project-card>
-      </el-tab-pane>
-      <el-tab-pane label="立项中" name="2" ref="begin">
-        <h2 v-if="projects2.length===0" class="no-data-tips">暂无数据</h2>
-        <project-card v-for="project in projects2" :key="project.id" :data="project">
-        </project-card>
-      </el-tab-pane>
-      <el-tab-pane label="已结项" name="3">
-        <h2 v-if="projects3.length===0" class="no-data-tips">暂无数据</h2>
-        <project-card v-for="project in projects3" :key="project.id" :data="project">
-        </project-card>
-      </el-tab-pane>
-    </el-tabs>
-    <el-button icon="el-icon-circle-plus" id="add-project" @click="isVisible = true">新增项目</el-button>
-    <project-dialog v-if="isVisible" :isVisible.sync="isVisible" @createProject="createProject"></project-dialog>
+  <div>
+    <div id="projects__wrapper">
+      <el-tabs v-model="tab" @tab-click="handleClick">
+        <el-tab-pane label="进行中" name="1">
+          <h2 v-if="projects1.length===0" class="no-data-tips">暂无数据</h2>
+          <project-card v-for="project in projects1" :key="project.id" :data="project">
+          </project-card>
+        </el-tab-pane>
+        <el-tab-pane label="立项中" name="2" ref="begin">
+          <h2 v-if="projects2.length===0" class="no-data-tips">暂无数据</h2>
+          <project-card v-for="project in projects2" :key="project.id" :data="project">
+          </project-card>
+        </el-tab-pane>
+        <el-tab-pane label="已结项" name="3">
+          <h2 v-if="projects3.length===0" class="no-data-tips">暂无数据</h2>
+          <project-card v-for="project in projects3" :key="project.id" :data="project">
+          </project-card>
+        </el-tab-pane>
+      </el-tabs>
+      <el-button icon="el-icon-circle-plus" id="add-project" @click="isVisible = true">新增项目</el-button>
+      <project-dialog v-if="isVisible" :isVisible.sync="isVisible" @createProject="createProject"></project-dialog>
+    </div>
   </div>
 </template>
 
@@ -71,6 +73,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+#projects__wrapper {
+  margin-left: 50px;
+}
 #add-project {
   @include absTR(54px, 248px);
   @include setSize(94px, 36px);

@@ -1,17 +1,22 @@
 <template>
-  <div class="event__wrapper">
+  <div class="event__wrapper" :style="wrapperColor">
     <div class="event__process" :style="progress">
     </div>
     <div class="event__header">
       <div class="event__checkbox">
-        <el-checkbox v-model="isFinished"></el-checkbox>
+        <el-checkbox v-model="tempEvent.isFinished" v-if="isShowCheck" @change="checkChange"></el-checkbox>
       </div>
-      <div class="event__desc">{{event.desc}}</div>
+      <div class="event__desc" @click="showMask">{{event.desc}}</div>
       <user-avatar :username="event.members[0].username" :job="event.members[0].jobId" class="event__avatar"></user-avatar>
     </div>
     <div class="event__footer">
       <mini-tag :id="event.tags[0].id" :tagName="event.tags[0].name" class="event__tag"></mini-tag>
       <div class="event__time-label" :style="bgColor">{{label}}</div>
+    </div>
+    <div class="event__mask" v-show="isShowMenu">
+      <el-button icon="el-icon-edit" type="text" id="edit" @click="isShowMenu=false; $emit('updateEvent')"></el-button>
+      <el-button icon="el-icon-delete" type="text" id="delete" @click="isShowMenu=false; $emit('deleteEvent')"></el-button>
+      <el-button icon="el-icon-close" type="text" id="cancel" @click="isShowMenu=false"></el-button>
     </div>
   </div>
 </template>
@@ -20,6 +25,7 @@
 import UserAvatar from '@/components/UserAvatar';
 import MiniTag from '@/components/MiniTag';
 import { date } from '@/utils';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -39,6 +45,7 @@ export default {
           startTime: '2018-03-12 12:00:00',
           endTime: '2018-03-16 12:00:00',
           planTime: 40,
+          realTime: 0,
           approval: 0,
           ratio: 0,
         };
@@ -47,43 +54,75 @@ export default {
   },
   data() {
     return {
-      isFinished: false,
       bgColor: {},
       label: '',
+      isShowMenu: false,
+      tempEvent: this.event,
     };
   },
   computed: {
+    ...mapState(['profile']),
     progress() {
       return {
         height: `${this.event.process * 0.01 * 7.3206}vw`,
       };
     },
+    wrapperColor() {
+      if (this.tempEvent.isFinished) {
+        return {
+          backgroundColor: '#eee',
+        };
+      }
+      return {};
+    },
+    /**
+     * 只有事件的参与者才可以勾选checkbox
+     */
+    isShowCheck() {
+      let members = this.event.members.map(m => m.id); //  获取事件参与者所有id
+      let isJoinIn = members.indexOf(this.profile.userId) !== -1; // 是否被包含
+      return this.profile.isPM || isJoinIn;
+    },
+  },
+  methods: {
+    showMask() {
+      this.profile.isPM ?
+        (this.isShowMenu = true) : this.$emit('updateEvent');
+    },
+    checkChange(value) {
+      this.$emit('finishEvent', this.tempEvent.id, +value);
+      this.getLabel();
+    },
+    getLabel() {
+      const twoDay = 1000 * 60 * 60 * 24 * 2; // 2天
+      let startTime = new Date(this.event.startTime);
+      let endTime = new Date(this.event.endTime);
+      let now = new Date();
+      let bgColor = '#fff';
+      if (this.tempEvent.isFinished) {
+        this.label = '已完成';
+        bgColor = '#3f51b5';
+      } else if (now < startTime) {
+        this.label = `${date.format(startTime, 'yyyy-MM-dd')}开始`;
+        bgColor = '#20a0ff';
+      } else if (now >= startTime && now <= endTime) {
+        this.label = '进行中';
+        bgColor = '#3f51b5';
+        if (endTime - now < twoDay && endTime - now > 0) { // 离截止不足2天, 但未结束
+          this.label = `${date.format(endTime, 'yyyy-MM-dd')}截止`;
+          bgColor = '#E6434C';
+        }
+      } else if (now >= endTime) {
+        this.label = '已结束';
+        bgColor = '#9e9e9e';
+      }
+      this.bgColor = {
+        backgroundColor: bgColor,
+      };
+    },
   },
   mounted() {
-    const twoDay = 1000 * 60 * 60 * 24 * 2; // 2天
-    let startTime = new Date(this.event.startTime);
-    let endTime = new Date(this.event.endTime);
-    let now = new Date();
-    let bgColor = '#fff';
-    if (now < startTime) {
-      this.label = `${date.format(startTime, 'yyyy-MM-dd')}开始`;
-      bgColor = '#20a0ff';
-    }
-    if (now >= startTime && now <= endTime) {
-      this.label = '进行中';
-      bgColor = '#3f51b5';
-    }
-    if (endTime - now < twoDay && endTime - now > 0) { // 离截止不足2天, 但未结束
-      this.label = `${date.format(endTime, 'yyyy-MM-dd')}截止`;
-      bgColor = '#E6434C';
-    }
-    if (now >= endTime) {
-      this.label = '已结束';
-      bgColor = '#9e9e9e';
-    }
-    this.bgColor = {
-      backgroundColor: bgColor,
-    };
+    this.getLabel();
   },
 };
 </script>
@@ -93,6 +132,7 @@ export default {
   @include setSize(232px, 100px);
   box-sizing: border-box;
   background-color: #fff;
+  border: 1px solid #ddd;
   border-radius: 5px;
   margin: 10px auto;
   padding: 5px;
@@ -101,6 +141,7 @@ export default {
 .event__process {
   @include absTL(0, 0);
   width: 5px;
+  border-radius: 5px;
   background-color: $success;
 }
 .event__header {
@@ -111,6 +152,7 @@ export default {
 .event__desc {
   @include setSize(128px, 70px);
   color: $black;
+  cursor: pointer;
   font-size: 12px;
   line-height: 20px;
   margin-left: 8px;
@@ -126,14 +168,32 @@ export default {
 }
 .event__footer {
   @include flex(space-between);
+  padding: 0 5px;
 }
 .event__time-label {
   display: inline-block;
   font-size: 12px;
-  line-height: 16px;
+  line-height: 1.5;
   height: 16px;
   padding: 0 5px;
   color: #fff;
+}
+.event__mask {
+  @include setSize(100%, 100%);
+  @include absTL(0,0);
+  @include flex(space-between);
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 0 30px;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  #edit,
+  #cancel,
+  #delete {
+    color: #fff;
+    font-size: 24px;
+  }
 }
 </style>
 

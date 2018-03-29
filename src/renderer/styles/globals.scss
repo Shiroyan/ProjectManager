@@ -58,10 +58,10 @@ html {
   width: 124px;
   &.is-active {
     font-weight: bold;
-    color: $default !important;
+    color: $default;
   }
   &:hover {
-    color: $default !important;
+    color: $default;
   }
 }
 

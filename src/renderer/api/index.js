@@ -209,14 +209,57 @@ const eventsApi = {
   create(data, successCb) {
     post('/events', successCb, data);
   },
+  update(eventId, data, successCb) {
+    put(`events/${eventId}`, successCb, data);
+  },
+  delete(eventId, data, successCb) {
+    $delete(`events/${eventId}`, successCb, data);
+  },
+  finish(eventId, data, successCb) {
+    put(`events/${eventId}/status`, successCb, data);
+  },
 };
 //#endregion
 
+//#region 统计接口
+const staApi = {
+  sysChanges(startTime, endTime, successCb) {
+    (startTime && endTime) ?
+      get(`/statistics?startTime=${startTime}&endTime=${endTime}`, successCb)
+      :
+      get('/statistics', successCb);
+  },
+  excel(type, startTime, endTime, successCb) {
+    let callback = (data) => {
+      let a = document.createElement('a');
+      a.href = data.url;
+      a.download = '';
+      a.click();
+      successCb && successCb();
+    };
+    (startTime && endTime) ?
+      get(`/statistics/excel?type=${type}&startTime=${startTime}&endTime=${endTime}`, callback)
+      :
+      get(`/statistics/excel?type=${type}`, callback);
+  },
+  plan(userId, successCb, startTime, endTime) {
+    (startTime && endTime) ?
+      get(`statistics/${userId}/plan?startTime=${startTime}&endTime=${endTime}`, successCb) :
+      get(`statistics/${userId}/plan`, successCb);
+  },
+  real(userId, successCb, startTime, endTime) {
+    (startTime && endTime) ?
+      get(`statistics/${userId}/real?startTime=${startTime}&endTime=${endTime}`, successCb) :
+      get(`statistics/${userId}/real`, successCb);
+  },
+};
+//#endregion
 export default {
   $users: usersApi,
   $projects: projectsApi,
   $plans: plansApi,
   $events: eventsApi,
+  $sta: staApi,
 };
 
 export {

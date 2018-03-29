@@ -1,17 +1,17 @@
 <template>
   <div class="plan__wrapper">
-    <div class="edit__dialog">
-      <el-popover ref="editPlan" placement="bottom" width="18.301vw" v-model="isEditPlan">
-        <el-form :model="planForm" ref="planForm" :rules="rules" label-position="left" label-width="5vw">
+    <div class="plan-edit__dialog">
+      <el-popover ref="updatePlan" placement="bottom" width="18.301vw" v-model="isUpdatePlan">
+        <el-form :model="planUpdateForm" ref="planUpdateForm" :rules="rules" label-position="left" label-width="5vw">
           <el-form-item class="form__item" prop="planName" label="计划名">
-            <sb-input v-model="planForm.planName" placeholder="计划名，3-10个字符"></sb-input>
+            <sb-input v-model="planUpdateForm.planName" placeholder="计划名，3-10个字符"></sb-input>
           </el-form-item>
           <el-form-item class="form__item" label="进度">
-            <el-slider id="process" v-model="planForm.process" show-input :show-input-controls="false" input-size="mini"></el-slider>
+            <el-slider id="process" v-model="planUpdateForm.process" show-input :show-input-controls="false" input-size="mini"></el-slider>
           </el-form-item>
           <div style="text-align: center">
-            <el-button id="edit__cancel" @click="isEditPlan = false" type="text">取消</el-button>
-            <el-button id="edit__ensure" @click="edit" type="text">确定</el-button>
+            <el-button id="edit__cancel" @click="isUpdatePlan = false" type="text">取消</el-button>
+            <el-button id="edit__ensure" @click="updatePlan" type="text">确定</el-button>
           </div>
         </el-form>
       </el-popover>
@@ -19,11 +19,11 @@
     <div class="plan__header">
       <div class="plan__name">{{plan.name}}</div>
       <el-button class="plan__del" icon="el-icon-close" type="text" v-if="profile.isPM" @click="isDelPlan = true"></el-button>
-      <el-button class="plan__edit" icon="el-icon-edit" type="text" v-if="profile.isPM" v-popover:editPlan></el-button>
+      <el-button class="plan__edit" icon="el-icon-edit" type="text" v-if="profile.isPM" v-popover:updatePlan></el-button>
       <div class="plan__progress" :style="progress"></div>
     </div>
     <div class="events__container">
-      <event v-for="e in plan.events" :key="e.id" :event="e"></event>
+      <event v-for="e in plan.events" :key="e.id" :event="e" @updateEvent="updateEvent(e)" @deleteEvent="deleteEvent(e.id)" @finishEvent="finishEvent"></event>
       <el-button id="add-event" icon="el-icon-circle-plus" type="text" v-if="profile.isPM" @click="isAddEvent = true">添加新事件</el-button>
     </div>
     <div class="del__dialog" v-show="isDelPlan">
@@ -38,30 +38,75 @@
     </div>
     <div class="add-event__dialog" v-show="isAddEvent">
       <div class="dialog__content">
-        <el-form :model="eventForm" ref="eventForm" :rules="rules" label-position="top">
+        <el-form :model="eventAddForm" ref="eventAddForm" :rules="rules" label-position="top">
           <el-form-item class="form__item" prop="desc" label="事件内容">
-            <el-input type="textarea" :rows="3" placeholder="0 - 200个字符" v-model="eventForm.desc" resize="none"></el-input>
+            <el-input type="textarea" :rows="3" placeholder="0 - 200个字符" v-model="eventAddForm.desc" resize="none"></el-input>
           </el-form-item>
           <el-form-item class="form__item" label="成员" prop="members">
-            <member-icons :list="eventForm.members" @add="isShowUserList = true" @remove="removeMember"></member-icons>
+            <member-icons :list="eventAddForm.members" @add="isShowUserList = true" @remove="removeMember"></member-icons>
           </el-form-item>
           <el-form-item class="form__item" label="起止时间" prop="startEnd">
-            <date-time-picker id="time-range" v-model="eventForm.startEnd" :pickerOptions="pickerOptions"></date-time-picker>
+            <date-time-picker id="time-range" v-model="eventAddForm.startEnd" :pickerOptions="pickerOptions"></date-time-picker>
           </el-form-item>
           <el-form-item class="form__item" label="计划时间" prop="planTime">
-            <el-input-number v-model="eventForm.planTime" size="mini" :controls="false"></el-input-number>
+            <el-input-number v-model="eventAddForm.planTime" size="mini" :controls="false"></el-input-number>
           </el-form-item>
           <el-form-item class="form__item" label="标签" prop="tags">
-            <tag v-model="eventForm.tags"></tag>
+            <tag v-model="eventAddForm.tags"></tag>
           </el-form-item>
         </el-form>
       </div>
       <div class="dialog__footer">
         <el-button type="text" id="add__cancel" @click="isAddEvent = false">取消</el-button>
-        <el-button type="text" id="add__ensure" @click="create">创建</el-button>
+        <el-button type="text" id="add__ensure" @click="ensure('eventAddForm')">创建</el-button>
       </div>
-      <user-list :isVisible.sync="isShowUserList" :list="userList" v-model="eventForm.members" :appendToBody="false"></user-list>
+      <user-list :isVisible.sync="isShowUserList" :list="userList" v-model="eventAddForm.members" :appendToBody="false"></user-list>
     </div>
+    <el-dialog :visible.sync="isUpdateEvent" center width="37vw" custom-class="edit-event__dialog" top="5vh">
+      <el-form :model="eventUpdateForm" ref="eventUpdateForm" :rules="rules" label-position="left" label-width="7.321vw" :disabled="!profile.isPM">
+        <el-form-item class="form__item" prop="desc" label="事件内容">
+          <el-input type="textarea" :rows="3" placeholder="0 - 200个字符" v-model="eventUpdateForm.desc" resize="none"></el-input>
+        </el-form-item>
+        <el-form-item class="form__item" label="成员" prop="members">
+          <member-icons :list="eventUpdateForm.members" @add="isShowUserList = true" @remove="removeMember2" :showAdd="profile.isPM" :showRemove="profile.isPM"></member-icons>
+        </el-form-item>
+        <el-form-item class="form__item" label="起止时间">
+          <div id="time-range">
+            <i class="el-icon-time"></i> {{eventUpdateForm.startTime}} ~ {{eventUpdateForm.endTime}}
+          </div>
+        </el-form-item>
+        <el-form-item class="form__item form__item--inline" label="计划时间" prop="planTime">
+          <el-input-number v-model="eventUpdateForm.planTime" size="mini" :controls="false"></el-input-number>
+        </el-form-item>
+        <el-form-item class="form__item form__item--inline" label="实际时间" prop="realTime">
+          <el-input-number v-model="eventUpdateForm.realTime" size="mini" :controls="false"></el-input-number>
+        </el-form-item>
+        <br />
+        <el-form-item class="form__item form__item--inline" label="核准时间" prop="approval">
+          <el-input-number v-model="eventUpdateForm.approval" size="mini" :controls="false"></el-input-number>
+        </el-form-item>
+        <el-form-item class="form__item form__item--inline" label="系数(核准/实际)" prop="ratio">
+          <el-input-number v-model="eventUpdateForm.ratio" size="mini" :controls="false"></el-input-number>
+        </el-form-item>
+        <el-form-item class="form__item" label="进度" prop="process">
+          <el-slider id="process" v-model="eventUpdateForm.process" show-input :show-input-controls="false" input-size="mini"></el-slider>
+        </el-form-item>
+        <el-form-item class="form__item" label="是否完成">
+          <el-checkbox v-model="eventUpdateForm.isFinished"></el-checkbox>
+        </el-form-item>
+        <el-form-item class="form__item" label="标签" prop="tags">
+          <tag v-model="eventUpdateForm.tags" :showAdd="profile.isPM"></tag>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" v-if="profile.isPM">
+        <div class="dialog__footer">
+          <el-button type="text" id="edit__cancel" @click="isUpdateEvent = false">取消</el-button>
+          <el-button type="info" id="edit__ensure" @click="ensure('eventUpdateForm')">确定</el-button>
+        </div>
+      </div>
+      <user-list :isVisible.sync="isShowUserList" :list="userList" v-model="eventUpdateForm.members"></user-list>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -107,15 +152,16 @@ export default {
   },
   data() {
     return {
-      isEditPlan: false,
+      isUpdatePlan: false,
       isDelPlan: false,
       isAddEvent: false,
+      isUpdateEvent: false,
       isShowUserList: false,
-      planForm: {
+      planUpdateForm: {
         planName: this.plan.name,
         process: this.plan.process,
       },
-      eventForm: {
+      eventAddForm: {
         desc: '',
         startTime: '',
         endTime: '',
@@ -133,6 +179,15 @@ export default {
           return cur > sunday || cur < monday;
         },
       },
+      eventUpdateForm: {
+        desc: '',
+        startTime: '',
+        endTime: '',
+        members: [],
+        planTime: 0,
+        tags: [],
+        startEnd: [],
+      },
     };
   },
   computed: {
@@ -144,11 +199,11 @@ export default {
     },
   },
   methods: {
-    edit() {
-      this.$refs.planForm.validate((valid) => {
+    updatePlan() {
+      this.$refs.planUpdateForm.validate((valid) => {
         if (valid) {
-          this.$emit('editPlan', this.plan.id, this.planForm);
-          this.isEditPlan = false;
+          this.$emit('updatePlan', this.plan.id, this.planUpdateForm);
+          this.isUpdatePlan = false;
         } else {
           this.$message.error({ message: '请检查格式是否正确', center: true });
           return false;
@@ -156,19 +211,51 @@ export default {
         return true;
       });
     },
-    removeMember(id) {
-      this.eventForm.members = this.eventForm.members.filter(val => val.id !== id);
+    removeMember(id) { // 处理事件添加框的成员变动
+      this.eventAddForm.members = this.eventAddForm.members.filter(val => val.id !== id);
     },
-    create() {
-      this.$refs.eventForm.validate((valid) => {
+    removeMember2(id) { // 处理事件编辑框的成员变动
+      this.eventUpdateForm.members = this.eventUpdateForm.members.filter(val => val.id !== id);
+    },
+    ensure(formName) { // 事件创建、编辑按钮回调
+      this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.eventForm.planId = this.plan.id;
-          this.$emit('createEvent', Object.assign({}, this.eventForm));
-          this.isAddEvent = false;
+          this[formName].planId = this.plan.id;
+          let data = Object.assign({}, this[formName]); //  拷贝对象
+          data.members = data.members.map(u => u.id).join(',');
+          data.tags = data.tags.map(t => t.id).join(',');
+          if (formName === 'eventAddForm') {
+            data.startTime = data.startEnd[0]; //  处理请求数据
+            data.endTime = data.startEnd[1];
+            delete data.startEnd;
+            this.$emit('createEvent', data);
+            this.isAddEvent = false;
+          } else {
+            data.isFinished = +data.isFinished;
+            delete data.startEnd;
+            this.$emit('updateEvent', data, () => {
+              this.isUpdateEvent = false;
+            });
+          }
         } else {
           this.$message.error({ message: '请检查格式', center: true });
         }
       });
+    },
+    updateEvent(e) {
+      this.eventUpdateForm = Object.assign({}, e);
+      this.isUpdateEvent = true;
+    },
+    deleteEvent(eventId) {
+      this.$confirm('此操作将永久删除该事件, 是否继续?', '警告', {
+        type: 'error',
+        confirmButtonClass: 'confirm-delete',
+      }).then(() => {
+        this.$emit('deleteEvent', eventId, this.plan.id);
+      });
+    },
+    finishEvent(eventId, isFinished) {
+      this.$emit('finishEvent', eventId, this.plan.id, isFinished);
     },
   },
 };
@@ -221,6 +308,17 @@ export default {
     width: 6px;
     height: 8px;
     background-color: #9e9e9e;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px #eee;
+    background-color: #bbb;
   }
 }
 #add-event {
@@ -301,6 +399,36 @@ export default {
 #add__cancel {
   font-size: 12px;
 }
+
+.edit-event__dialog {
+  .form__item {
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+    width: 80%;
+  }
+  .form__item--inline {
+    display: inline-block;
+    width: auto;
+    margin-right: 20px;
+  }
+  .el-input-number--mini {
+    width: 70px;
+  }
+  .el-dialog--center .el-dialog__body {
+    padding-bottom: 0;
+  }
+  #time-range {
+    display: inline-block;
+  }
+}
+#edit__ensure {
+  background-color: $default !important;
+  color: #fff;
+  border: none;
+  &:hover {
+    opacity: 0.9;
+  }
+}
 </style>
 <style lang="scss">
 #process {
@@ -344,5 +472,15 @@ export default {
   .el-range-input {
     font-size: 12px;
   }
+}
+.edit-event__dialog {
+  .el-dialog__body {
+    padding-bottom: 0 !important;
+  }
+}
+.confirm-delete {
+  background-color: $danger !important;
+  color: #fff !important;
+  border: none !important;
 }
 </style>

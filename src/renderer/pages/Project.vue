@@ -1,5 +1,5 @@
 <template>
-  <div id="project__wrapper">
+  <div>
     <el-tabs v-model="tab" @tab-click="handleClick" id="project__wrapper">
       <el-tab-pane label="基本信息" name="info">
         <div id="info__wrapper">
@@ -38,14 +38,14 @@
       </el-tab-pane>
       <el-tab-pane label="计划" name="plans">
         <div id="plans__container">
-          <plan v-for="p in plans" :key="p.id" :userList="userList" :plan="p" @editPlan="editPlan" @deletePlan="deletePlan" @createEvent="createEvent"></plan>
+          <plan v-for="p in plans" :key="p.id" :userList="userList" :plan="p" @updatePlan="updatePlan" @deletePlan="deletePlan" @createEvent="createEvent" @updateEvent="updateEvent" @deleteEvent="deleteEvent" @finishEvent="finishEvent"></plan>
           <transition-group mode="out-in" name="el-fade-in">
             <el-button id="add-plan-btn" icon="el-icon-plus" plain v-if="profile.isPM && !isAddPlan" @click="isAddPlan=true" key="button">新增计划</el-button>
             <div id="add-plan__form" v-if="isAddPlan" key="form">
               <input id="add-plan__input" placeholder="计划名, 3-10个字符" v-model="planName">
               <div id="add-plan__btn-group">
                 <el-button id="cancel" type="text" size="mini" @click="isAddPlan=false">取消</el-button>
-                <el-button id="add" type="text" size="mini" @click="addPlan">确定</el-button>
+                <el-button id="add" type="text" size="mini" @click="createPlan">确定</el-button>
               </div>
             </div>
           </transition-group>
@@ -156,7 +156,7 @@ export default {
         this.updateTags(tags);
       });
     },
-    addPlan() {
+    createPlan() {
       let len = this.planName.length;
       if (len < 3 || len > 10) {
         this.$message.error({ message: '字符3-10个', center: true });
@@ -170,7 +170,7 @@ export default {
         });
       }
     },
-    editPlan(id, form) {
+    updatePlan(id, form) {
       this.$api.$plans.update(id, {
         projectId: this.projectId,
         name: form.planName,
@@ -187,14 +187,28 @@ export default {
     },
     createEvent(data) {
       data.projectId = this.projectId;
-      data.startTime = data.startEnd[0];
-      data.endTime = data.startEnd[1];
-      data.members = data.members.map(u => u.id).join(',');
-      data.tags = data.tags.map(t => t.id).join(',');
-      delete data.startEnd;
       this.$api.$events.create(data, () => {
         this.getPlans();
       });
+    },
+    updateEvent(data, cb) {
+      data.projectId = this.projectId;
+      this.$api.$events.update(data.id, data, () => {
+        cb && cb();
+        this.getPlans();
+      });
+    },
+    deleteEvent(eventId, planId) {
+      let data = {
+        planId,
+        projectId: this.projectId,
+      };
+      this.$api.$events.delete(eventId, data, () => {
+        this.getPlans();
+      });
+    },
+    finishEvent(eventId, planId, isFinished) {
+      this.$api.$events.finish(eventId, { planId, isFinished });
     },
   },
   beforeRouteEnter(to, from, next) {
@@ -217,8 +231,11 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+#project__wrapper {
+  margin-left: 50px;
+}
 #info__wrapper {
-  margin: 54px 0 0 62px;
+  margin: 54px 0 0 112px;
   font-size: 14px;
   color: $black;
   position: relative;

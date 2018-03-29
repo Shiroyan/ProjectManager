@@ -143,9 +143,8 @@ export default {
 }
 
 #content__wrapper {
-  @include setSize(1268px, 720px);
+  @include setSize(1318px, 720px);
   display: inline-block;
-  margin-left: 50px;
 }
 
 .profile__item {
