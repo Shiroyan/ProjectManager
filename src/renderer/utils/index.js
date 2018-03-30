@@ -71,6 +71,35 @@ const date = {
     }
     return fmt;
   },
+  /**
+   * 计算当月第一天在日历中的位置, 不传参数即为当月
+   * @param {number} year 年份
+   * @param {number} month 从0开始， 0~11
+   */
+  getFirstDayPosOfMonth(year = new Date().getFullYear(), month = new Date().getMonth()) {
+    return new Date(year, month, 1).getDay();
+  },
+  /**
+   * 计算一个月中有多少天， 不传参数即为当月
+   * @param {number} year 年份
+   * @param {number} month, 从0开始， 0 ~ 11
+   */
+  getDateNumOfMonth(year = new Date().getFullYear(), month = new Date().getMonth()) {
+    return new Date(year, month + 1, 0).getDate();
+  },
+  /**
+   * 生成日历数组空白为undefined, 不传参数即为当月
+   * @param {number} monthStart 第一天在日历中的第几天
+   * @param {number} monthEnd 当月有几天
+   */
+  genCalendar(monthStart = date.getFirstDayPosOfMonth(), monthEnd = date.getDateNumOfMonth()) {
+    let dates = [];
+    dates.length = 42; // 6 X 7 日历
+    for (let index = monthStart, dateNum = 1; dateNum <= monthEnd; ++index, ++dateNum) {
+      dates[index] = `${dateNum}`;
+    }
+    return dates;
+  },
 };
 
 

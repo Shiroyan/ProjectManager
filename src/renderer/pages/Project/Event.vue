@@ -1,5 +1,6 @@
 <template>
   <div class="event__wrapper" :style="wrapperColor">
+    <div class="event__warn" v-show="profile.isPM && event.isFinished && (event.ratio === 0 || event.realTime === 0 || event.approval === 0)"></div>
     <div class="event__process" :style="progress">
     </div>
     <div class="event__header">
@@ -137,6 +138,12 @@ export default {
   margin: 10px auto;
   padding: 5px;
   position: relative;
+}
+.event__warn {
+  @include setSize(12px, 12px);
+  @include absTR(-6px, -6px);
+  border-radius: 6px;
+  background-color: $danger;
 }
 .event__process {
   @include absTL(0, 0);

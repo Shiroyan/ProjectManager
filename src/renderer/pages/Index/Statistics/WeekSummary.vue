@@ -61,10 +61,7 @@
 
 <script>
 import DateTimePicker from '@/components/DateTimePicker';
-import Vue from 'vue';
-import { Popover } from 'element-ui';
 import { date } from '@/utils';
-Vue.use(Popover);
 
 export default {
   name: 'WeekSummary',
@@ -99,17 +96,32 @@ export default {
     };
   },
   methods: {
+    valiDate(data) {
+      let startTime = data[0];
+      let endTime = data[1];
+      if (!startTime || !endTime) {
+        this.$message.error({ message: '请选择日期', center: true });
+        return false;
+      }
+      startTime = date.format(new Date(startTime), 'yyyy-MM-dd');
+      endTime = date.format(new Date(endTime), 'yyyy-MM-dd');
+      return { startTime, endTime };
+    },
     findHistory() {
-      let startTime = date.format(new Date(this.historyStartEnd[0]), 'yyyy-MM-dd');
-      let endTime = date.format(new Date(this.historyStartEnd[1]), 'yyyy-MM-dd');
-      this.$emit('findHistory', startTime, endTime);
+      let isValid = this.valiDate(this.historyStartEnd);
+      if (isValid) {
+        let { startTime, endTime } = isValid;
+        this.$emit('findHistory', startTime, endTime);
+      }
     },
     genReport() {
-      let startTime = date.format(new Date(this.reportStartEnd[0]), 'yyyy-MM-dd');
-      let endTime = date.format(new Date(this.reportStartEnd[1]), 'yyyy-MM-dd');
-      this.$emit('genReport', startTime, endTime, this.reportType, () => {
-        this.isGenReport = false;
-      });
+      let isValid = this.valiDate(this.reportStartEnd);
+      if (isValid) {
+        let { startTime, endTime } = isValid;
+        this.$emit('genReport', startTime, endTime, this.reportType, () => {
+          this.isGenReport = false;
+        });
+      }
     },
   },
 };
@@ -165,7 +177,7 @@ export default {
 .summary__value {
   margin-right: 10px;
   color: #2e2e2e;
-  font-size: 14px;  
+  font-size: 14px;
 }
 #find-history__dialog {
   text-align: center;

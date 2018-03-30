@@ -254,12 +254,21 @@ const staApi = {
   },
 };
 //#endregion
+
+//#region 日程接口
+const scheduleApi = {
+  getSchedules(successCb, year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
+    get(`/schedules/${year}/${month}`, successCb);
+  },
+};
+//#endregion
 export default {
   $users: usersApi,
   $projects: projectsApi,
   $plans: plansApi,
   $events: eventsApi,
   $sta: staApi,
+  $sche: scheduleApi,
 };
 
 export {

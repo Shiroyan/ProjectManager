@@ -34,10 +34,10 @@
             <week-summary :sysChanges="sysChanges" @findHistory="getChanges" @genReport="genReport"></week-summary>
           </el-tab-pane>
           <el-tab-pane label="计划" name="plan">
-            <plan-report :plan="planReport"></plan-report>
+            <report :report="planReport" @findHistoryReport="findHistoryReport"></report>
           </el-tab-pane>
           <el-tab-pane label="实际" name="real">
-            实际
+            <report :report="realReport" @findHistoryReport="findHistoryReport" type="real"></report>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -49,14 +49,14 @@
 import { mapState, mapMutations } from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
 import WeekSummary from './Statistics/WeekSummary';
-import PlanReport from './Statistics/PlanReport';
+import Report from './Statistics/Report';
 
 export default {
   name: 'Statistics',
   components: {
     'user-avatar': UserAvatar,
     'week-summary': WeekSummary,
-    'plan-report': PlanReport,
+    report: Report,
   },
   data() {
     return {
@@ -136,6 +136,12 @@ export default {
     ...mapMutations(['updateUsers']),
     userClick(userId) {
       this.curSelectedUser = userId;
+      if (this.tab === 'plan') {
+        this.getPlan(this.curSelectedUser);
+      }
+      if (this.tab === 'real') {
+        this.getReal(this.curSelectedUser);
+      }
     },
     /**
      * 筛选符合条件的用户，匹配用户名、岗位、部门、城市。
@@ -164,12 +170,10 @@ export default {
     },
     handleTabClick(tab, event) {
       let { name } = tab;
-      if (this.curSelectedUser === -1) { // 未选择其它用户时，默认显示自己
-        if (name === 'plan') {
-          this.getPlan(this.profile.userId);
-        } else if (name === 'real') {
-          this.getReal(this.profile.userId);
-        }
+      if (name === 'plan') {
+        this.getPlan(this.curSelectedUser);
+      } else if (name === 'real') {
+        this.getReal(this.curSelectedUser);
       }
     },
     getChanges(startTime, endTime) {
@@ -181,14 +185,23 @@ export default {
       this.$api.$sta.excel(type, startTime, endTime, cb);
     },
     getPlan(userId, startTime, endTime) {
+      userId = userId === -1 ? this.profile.userId : userId;
       this.$api.$sta.plan(userId, (data) => {
         this.planReport = data;
       }, startTime, endTime);
     },
     getReal(userId, startTime, endTime) {
+      userId = userId === -1 ? this.profile.userId : userId;
       this.$api.$sta.real(userId, (data) => {
         this.realReport = data;
       }, startTime, endTime);
+    },
+    findHistoryReport(startTime, endTime, type) {
+      if (type === 'plan') {
+        this.getPlan(this.curSelectedUser, startTime, endTime);
+      } else {
+        this.getReal(this.curSelectedUser, startTime, endTime);
+      }
     },
   },
   watch: {
@@ -231,7 +244,7 @@ export default {
   border-bottom: 1px solid #ddd;
 }
 #user-list__content {
-  @include setSize(100%, 670px);
+  @include setSize(100%, 87.23vh);
   overflow: hidden;
 }
 #user-list__tabs {
