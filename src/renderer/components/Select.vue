@@ -3,7 +3,7 @@
     <div class="icon">
       <i :class="icon"></i>
     </div>
-    <el-select id="select" :placeholder="placeholder" v-model="val" popper-class="select__options" @change="change">
+    <el-select id="select" :placeholder="placeholder" v-model="val" popper-class="select__options">
       <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"></el-option>
     </el-select>
   </div>
@@ -24,18 +24,26 @@ export default {
       type: Array,
       require: true,
     },
-    value: [Number],
+    value: [Number, String],
   },
   data() {
     return {
-      val: this.value,
+      // val: this.value,
     };
   },
-  methods: {
-    change() {
-      this.$emit('input', this.val);
+  computed: {
+    val: {
+      get() {
+        return this.value;
+      },
+      set(v) { this.$emit('input', v); },
     },
   },
+  // methods: {
+  //   change() {
+  //     this.$emit('input', this.val);
+  //   },
+  // },
 };
 </script>
 

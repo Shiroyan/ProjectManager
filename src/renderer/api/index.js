@@ -155,6 +155,9 @@ const usersApi = {
   getUsersList(successCb) {
     get('/users', successCb);
   },
+  delete(id, successCb) {
+    $delete(`users/${id}`, successCb);
+  },
 };
 //#endregion
 
@@ -259,6 +262,12 @@ const staApi = {
 const scheduleApi = {
   getSchedules(successCb, year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
     get(`/schedules/${year}/${month}`, successCb);
+  },
+  updateWorkHour(successCb, data) {
+    post('/schedules/workhour', successCb, data);
+  },
+  updateWorkHourByPM(successCb, data) {
+    put('/schedules/workhour', successCb, data);
   },
 };
 //#endregion

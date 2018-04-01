@@ -1,11 +1,52 @@
 <template>
   <div>
     <div id="schedules__wrapper">
+      <el-dialog width="30.894vw" :visible.sync="isReportWorkHour">
+        <div id="report-workhour__dialog">
+          <el-form :model="workHourForm" ref="workHourForm" :rules="rules" label-width="100px" label-position="left">
+            <el-form-item label="起止时间" prop="week">
+              <el-date-picker v-model="workHourForm.week" type="week" format="yyyy 第 WW 周" placeholder="选择周" :picker-options="pickerOptions">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="工时" prop="avaTime">
+              <el-input-number v-model="workHourForm.avaTime" :controls="false"></el-input-number>
+            </el-form-item>
+          </el-form>
+          <div style="text-align: center">
+            <el-button id="report-workhour__cancel" @click="isReportWorkHour = false" type="text">取消</el-button>
+            <el-button id="report-workhour__ensure" type="text" @click="reportWorkHour">确定</el-button>
+          </div>
+        </div>
+      </el-dialog>
+      <el-dialog width="30.894vw" :visible.sync="isModWorkHour">
+        <div id="mod-workhour__dialog">
+          <el-form :model="modWorkHourForm" ref="modWorkHourForm" :rules="rules" label-width="100px" label-position="left">
+            <el-form-item label="起止时间" prop="week">
+              <el-date-picker v-model="modWorkHourForm.week" type="week" format="yyyy 第 WW 周" placeholder="选择周" :picker-options="pickerOptions">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="工时" prop="avaTime">
+              <el-input-number v-model="modWorkHourForm.avaTime" :controls="false"></el-input-number>
+            </el-form-item>
+            <el-form-item label="成员" prop="members">
+              <member-icons :list="modWorkHourForm.members" @add="isShowUserList = true" @remove="removeMember"></member-icons>
+            </el-form-item>
+          </el-form>
+          <div style="text-align: center">
+            <el-button id="mod-workhour__cancel" @click="isModWorkHour = false" type="text">取消</el-button>
+            <el-button id="mod-workhour__ensure" type="text" @click="modWorkHour">确定</el-button>
+          </div>
+        </div>
+      </el-dialog>
       <div id="schedules__header">
-        <div id="schedules__range"></div>
+        <div id="schedules__range">
+          <el-button id="pre-month" type="text" icon="el-icon-arrow-left" @click="preMonth"></el-button>
+          <div id="year-month">{{year}} 年 {{month}} 月</div>
+          <el-button id="next-month" type="text" icon="el-icon-arrow-right" @click="nextMonth"></el-button>
+        </div>
         <el-button id="filter" icon="el-icon-my-filter">筛选</el-button>
-        <el-button id="workhour">汇报工时</el-button>
-        <el-button id="modify" type="warning" v-if="profile.isPM">修改工时</el-button>
+        <el-button id="workhour" @click="isReportWorkHour = true">汇报工时</el-button>
+        <el-button id="modify" type="warning" v-if="profile.isPM" @click="isModWorkHour = true">修改工时</el-button>
       </div>
       <div id="schedules__body">
         <div class="weekadys" v-for="(day, index) in weekdays" :key="`wd${index}`">{{day}}</div>
@@ -17,31 +58,84 @@
           </p>
         </div>
       </div>
+      <user-list :isVisible.sync="isShowUserList" :list="users.users" v-model="modWorkHourForm.members"></user-list>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import { date } from '@/utils';
+import MemberIcons from '@/components/MemberIcons';
+import UserList from '@/components/UserList';
 
 
 export default {
   name: 'Schedule',
+  components: {
+    'member-icons': MemberIcons,
+    'user-list': UserList,
+  },
   data() {
     return {
       weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-      dates: date.genCalendar(),
       schedules: {},
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      isReportWorkHour: false,
+      isModWorkHour: false,
+      isShowUserList: false,
+      startEnd: '',
+      workHourForm: {
+        week: '',
+        avaTime: 40,
+      },
+      modWorkHourForm: {
+        week: '',
+        avaTime: 40,
+        members: [],
+      },
+      pickerOptions: {
+        firstDayOfWeek: 1,
+        disabledDate(time) {
+          let nextWeek = new Date();
+          nextWeek.setDate(nextWeek.getDate() + 7);
+          return time.getTime() > date.getWeekEnd(nextWeek);
+        },
+      },
     };
   },
   computed: {
-    ...mapState(['profile']),
+    ...mapState(['profile', 'rules', 'users']),
+    dates() {
+      let monthStart = date.getFirstDayPosOfMonth(this.year, this.month);
+      let monthEnd = date.getDateNumOfMonth(this.year, this.month);
+      return date.genCalendar(monthStart, monthEnd);
+    },
   },
   methods: {
+    ...mapMutations(['updateUsers']),
     statusColor(status) {
       let color = status === '开始' ? '#259B24' : '#E6434C';
       return { color };
+    },
+    preMonth() {
+      if (this.month - 1 === 0) {
+        this.year--;
+        this.month = 12;
+      } else {
+        --this.month;
+      }
+      this.getSchedules(this.year, this.month);
+    },
+    nextMonth() {
+      if (this.month + 1 === 13) {
+        ++this.year;
+        this.month = 1;
+      } else {
+        ++this.month;
+      }
+      this.getSchedules(this.year, this.month);
     },
     getSchedules(year, month) {
       (year && month) ?
@@ -51,9 +145,47 @@ export default {
         :
         this.$api.$sche.getSchedules((data) => { this.schedules = data; });
     },
+    reportWorkHour() {
+      this.$refs.workHourForm.validate((valid) => {
+        if (valid) {
+          let data = {
+            startTime: date.format(date.getWeekStart(this.workHourForm.week), 'yyyy-MM-dd'),
+            endTime: date.format(date.getWeekEnd(this.workHourForm.week), 'yyyy-MM-dd'),
+            avaTime: this.workHourForm.avaTime,
+          };
+          this.$api.$sche.updateWorkHour(() => {
+            this.isReportWorkHour = false;
+          }, data);
+        } else {
+          this.$message.error('请检查格式');
+        }
+      });
+    },
+    removeMember(id) { // 处理事件添加框的成员变动
+      this.modWorkHourForm.members = this.modWorkHourForm.members.filter(val => val.id !== id);
+    },
+    modWorkHour() {
+      this.$refs.modWorkHourForm.validate((valid) => {
+        if (valid) {
+          let data = {
+            startTime: date.format(date.getWeekStart(this.modWorkHourForm.week), 'yyyy-MM-dd'),
+            endTime: date.format(date.getWeekEnd(this.modWorkHourForm.week), 'yyyy-MM-dd'),
+            avaTime: this.modWorkHourForm.avaTime,
+            members: this.modWorkHourForm.members.map(u => u.id).join(','),
+          };
+          this.$api.$sche.updateWorkHourByPM(() => {
+            this.isModWorkHour = false;
+          }, data);
+        } else {
+          this.$message.error('请检查格式');
+        }
+      });
+    },
   },
   mounted() {
     this.getSchedules();
+    this.users.users.length === 0
+      && this.$api.$users.getUsersList(users => this.updateUsers(users));
   },
 };
 </script>
@@ -70,6 +202,22 @@ export default {
   @include setSize(100%, 32px);
   overflow: hidden;
   margin-bottom: 10px;
+  text-align: center;
+}
+
+#schedules__range {
+  width: 200px;
+  margin-left: 220px;
+  display: inline-block;
+}
+
+#pre-month {
+  vertical-align: middle;
+}
+
+#year-month {
+  display: inline-block;
+  margin: 0 10px;
 }
 
 #filter,
@@ -81,6 +229,7 @@ export default {
   float: right;
   margin-left: 18px;
 }
+
 #filter {
   @include flex(center);
   background-color: #fff;
@@ -134,6 +283,9 @@ export default {
   color: $default;
   font-size: 12px;
   cursor: pointer;
+}
+#report-workhour__ensure {
+  margin-left: 20px;
 }
 </style>
 

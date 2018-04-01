@@ -35,14 +35,22 @@ export default {
   },
   data() {
     return {
-      val: this.value,
+      // val: this.value,
     };
   },
-  watch: {
-    val(newVal, oldVal) {
-      this.$emit('input', newVal);
+  computed: {
+    val: {
+      get() { return this.value; },
+      set(v) {
+        this.$emit('input', v);
+      },
     },
   },
+  // watch: {
+  //   val(newVal, oldVal) {
+  //     this.$emit('input', newVal);
+  //   },
+  // },
 };
 </script>
 

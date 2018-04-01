@@ -74,18 +74,18 @@ const date = {
   /**
    * 计算当月第一天在日历中的位置, 不传参数即为当月
    * @param {number} year 年份
-   * @param {number} month 从0开始， 0~11
+   * @param {number} month 从1开始， 1~12
    */
-  getFirstDayPosOfMonth(year = new Date().getFullYear(), month = new Date().getMonth()) {
-    return new Date(year, month, 1).getDay();
+  getFirstDayPosOfMonth(year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
+    return new Date(year, month - 1, 1).getDay();
   },
   /**
    * 计算一个月中有多少天， 不传参数即为当月
    * @param {number} year 年份
-   * @param {number} month, 从0开始， 0 ~ 11
+   * @param {number} month, 从0开始， 1 ~ 12
    */
-  getDateNumOfMonth(year = new Date().getFullYear(), month = new Date().getMonth()) {
-    return new Date(year, month + 1, 0).getDate();
+  getDateNumOfMonth(year = new Date().getFullYear(), month = new Date().getMonth() + 1) {
+    return new Date(year, month, 0).getDate();
   },
   /**
    * 生成日历数组空白为undefined, 不传参数即为当月

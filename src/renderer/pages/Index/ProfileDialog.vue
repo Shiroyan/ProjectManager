@@ -2,8 +2,8 @@
   <el-dialog :visible.sync="_isVisible" title="修改个人信息" center width="26.354vw" custom-class="profile-dialog">
     <el-form :model="profileForm" ref="profileForm" :rules="rules" :status-icon="false">
       <div class="input-group">
-        <el-form-item class="form__item" prop="password" v-if="isAdmin">
-          <my-input class="input" type="password" icon="password" placeholder="新密码，不输入代表不更改" v-model="profileForm.password"></my-input>
+        <el-form-item class="form__item" v-if="profile.isAdmin">
+          <my-input class="input" type="password" icon="password" placeholder="新密码，不输入代表不更改" v-model="profileForm.newPwd"></my-input>
         </el-form-item>
         <el-form-item class="form__item" prop="username">
           <my-input class="input" icon="username" placeholder="请输入姓名，3 - 12个字" v-model="profileForm.username"></my-input>
@@ -46,41 +46,45 @@ export default {
       type: Boolean,
       required: true,
     },
+    form: {
+      type: Object,
+      default() {
+        return {
+          username: '',
+          city: -1,
+          dep: -1,
+          job: -1,
+          newPwd: '',
+        };
+      },
+    },
+  },
+  data() {
+    return {
+    };
   },
   computed: {
     ...mapState(['options', 'rules', 'profile']),
-    isAdmin() {
-      return this.profile.role === 0;
-    },
     _isVisible: {
       get() { return this.isVisible; },
       set(newVal) { this.$emit('update:isVisible', newVal); },
     },
     profileForm: {
       get() {
-        return {
-          username: this.profile.username,
-          city: this.profile.cityId,
-          dep: this.profile.depId,
-          job: this.profile.jobId,
-        };
+        return this.form;
       },
-      set(newVal) { },
+      set(v) { },
     },
   },
   methods: {
     modify(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.isAdmin ?
-            this.$api.$users.updateProfileByAdmin(this.id, this.profileForm, () => {
-              this._isVisible = false;
-            })
+          this.profile.isAdmin ?
+            this.$emit('updateProfile', this.id, this.profileForm)
             :
-            this.$api.$users.updateProfile(this.profileForm, () => {
-              this._isVisible = false;
-              this.$api.$users.getProfile((data) => { this.updateProfile(data); });
-            });
+            this.$emit('updateProfile', this.profileForm);
+          this._isVisible = false;
         } else {
           this.$message({
             type: 'error',
@@ -92,7 +96,7 @@ export default {
         return true;
       });
     },
-    ...mapMutations(['updateOptions', 'updateProfile']),
+    ...mapMutations(['updateOptions']),
   },
   mounted() {
     this.options.citys.length === 0 &&

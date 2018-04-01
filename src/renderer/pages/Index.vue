@@ -37,7 +37,7 @@
           <span>{{profile.jobName}}</span>
         </div>
         <div id="profile__btn-group">
-          <el-button class="profile__btn" type="text" @click="isVisible = true">修改资料</el-button>
+          <el-button class="profile__btn" type="text" @click="showEditProfile">修改资料</el-button>
           <el-button class="profile__btn" type="text" @click="$router.push('/forgetPwd')" style="float: right">修改密码</el-button>
         </div>
       </el-popover>
@@ -51,7 +51,7 @@
         <router-view id="content__wrapper"></router-view>
       </transition>
     </div>
-    <profile-dialog :isVisible.sync="isVisible"></profile-dialog>
+    <profile-dialog :isVisible.sync="isVisible" :form="selfProfile" @updateProfile="updateSelfProfile"></profile-dialog>
   </div>
 </template>
 
@@ -72,6 +72,12 @@ export default {
   data() {
     return {
       isVisible: false,
+      selfProfile: {
+        username: '',
+        city: '',
+        dep: '',
+        job: '',
+      },
     };
   },
   computed: {
@@ -83,6 +89,20 @@ export default {
     },
     refresh() {
       window.location.reload();
+    },
+    showEditProfile() {
+      this.selfProfile = {
+        city: this.profile.cityId,
+        dep: this.profile.depId,
+        job: this.profile.jobId,
+        username: this.profile.username,
+      };
+      this.isVisible = true;
+    },
+    updateSelfProfile(profileForm) {
+      this.$api.$users.updateProfile(profileForm, () => {
+        this.$api.$users.getProfile((data) => { this.updateProfile(data); });
+      });
     },
     ...mapMutations(['updateProfile']),
   },

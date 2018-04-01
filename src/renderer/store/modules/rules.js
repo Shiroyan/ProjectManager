@@ -89,7 +89,7 @@ const rules = {
     { max: 200, message: '不得超过200个字符', trigger: 'blur' },
   ],
   members: [
-    { required: true, type: 'array', min: 1, message: '至少要有1个成员负责' },
+    { required: true, type: 'array', min: 1, message: '至少要有1个成员' },
   ],
   startEnd: [
     { required: true, type: 'array', min: 2, message: '请选择起止时间' },
@@ -106,6 +106,12 @@ const rules = {
   ],
   ratio: [
     { required: true, type: 'number', message: '请设置系数' },
+  ],
+  week: [
+    { required: true, message: '请选择起止日期' },
+  ],
+  avaTime: [
+    { required: true, type: 'number', message: '请设置工时' },
   ],
 };
 
@@ -135,6 +141,8 @@ const state = {
   approval: rules.planTime,
   ratio: rules.ratio,
   tags: rules.tags,
+  week: rules.week,
+  avaTime: rules.avaTime,
 };
 
 export default {
