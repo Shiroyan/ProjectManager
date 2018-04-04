@@ -8,13 +8,19 @@
         </el-menu-item>
         <el-menu-item index="/schedule" class="nav__item" title="日程">
           <i class="el-icon-my-schedule"></i>
+          <span slot="title">日程</span>          
         </el-menu-item>
         <el-menu-item index="/users" class="nav__item" title="用户组">
           <i class="el-icon-my-users"></i>
+          <span slot="title">用户组</span>                    
         </el-menu-item>
         <el-menu-item index="/statistics" class="nav__item" title="统计">
           <i class="el-icon-my-statistics"></i>
           <span slot="title">统计</span>
+        </el-menu-item>
+        <el-menu-item index="/options" class="nav__item" title="选项设置" v-if="profile.isAdmin">
+          <i class="el-icon-my-options"></i>
+          <span slot="title">选项设置</span>
         </el-menu-item>
       </el-menu>
     </div>
@@ -132,7 +138,7 @@ export default {
   vertical-align: middle;
 }
 #top-bar {
-  @include setSize(100%, 48px);
+  @include setSize(100%, 6.25vh);
   @include flex(flex-end);
 }
 #logout,
@@ -163,7 +169,7 @@ export default {
 }
 
 #content__wrapper {
-  @include setSize(1318px, 720px);
+  @include setSize(1318px, 93.75vh);
   display: inline-block;
 }
 

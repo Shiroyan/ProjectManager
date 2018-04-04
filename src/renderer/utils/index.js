@@ -27,6 +27,23 @@ function getCookie(key) {
     });
   }));
 }
+/**
+ * Web端方法，在打包web端代码时。注释掉上面的同名方法
+ */
+// function getCookie(key) {
+//   return (new Promise((resolve, reject) => {
+//     let cookies = document.cookie.replace(/\s*/g, '').split(';');
+//     let o = {};
+//     cookies.length !== 0 && cookies.forEach((cookie) => {
+//       let temp = cookie.split('=');
+//       let key = temp[0];
+//       let val = temp[1];
+//       o[key] = val;
+//     });
+//     o[key] ?
+//       resolve(o[key]) : reject('token not found');
+//   }));
+// }
 
 const date = {
   getWeekStart(date) {

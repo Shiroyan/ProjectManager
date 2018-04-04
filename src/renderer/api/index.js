@@ -5,7 +5,12 @@ import router from '../router';
 const loading = Loading.service;
 const notify = Notification;
 
-const baseUrl = 'http://localhost:3000';
+
+const dev = 'http://localhost:3000';
+const prodClient = 'http://119.29.163.209';
+const prodWeb = '';
+
+const baseUrl = dev;
 axios.defaults.baseURL = baseUrl;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -271,6 +276,20 @@ const scheduleApi = {
   },
 };
 //#endregion
+
+//#region 菜单管理
+const optionsApi = {
+  add(type, data, successCb) {
+    post(`/options/${type}`, successCb, data);
+  },
+  update(type, id, data, successCb) {
+    put(`/options/${type}/${id}`, successCb, data);
+  },
+  delete(type, id, successCb) {
+    $delete(`/options/${type}/${id}`, successCb);
+  },
+};
+//#endregion
 export default {
   $users: usersApi,
   $projects: projectsApi,
@@ -278,6 +297,7 @@ export default {
   $events: eventsApi,
   $sta: staApi,
   $sche: scheduleApi,
+  $options: optionsApi,
 };
 
 export {

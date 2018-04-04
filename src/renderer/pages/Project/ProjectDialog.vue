@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="_isVisible" center width="37vw" custom-class="project-dialog" :top="mode === 'edit' ? '5vh': '15vh'">
+  <el-dialog :visible.sync="_isVisible" center width="37vw" custom-class="project-dialog" :top="mode === 'edit' ? '2vh': '15vh'">
     <el-form :model="projectForm" ref="projectForm" :rules="rules" :status-icon="false" label-position="left" label-width="6.2vw" class="project-form" :inline-message="false">
       <div class="input-group">
         <el-form-item class="form__item" prop="name" label="项目名称">
@@ -148,7 +148,7 @@ export default {
 }
 
 .form__item {
-  @include setSize(310px, 48px);
+  @include setSize(310px, 6.25vh);
   box-sizing: border-box;
   margin-bottom: 20px;
 }
@@ -187,6 +187,9 @@ export default {
   .el-slider__runway.show-input {
     margin-right: 60px;
   }
+}
+.project-dialog {
+  max-height: 90.23vh
 }
 </style>
 

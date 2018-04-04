@@ -114,7 +114,7 @@ export default {
           bgColor = '#E6434C';
         }
       } else if (now >= endTime) {
-        this.label = '已结束';
+        this.label = '已逾期';
         bgColor = '#9e9e9e';
       }
       this.bgColor = {

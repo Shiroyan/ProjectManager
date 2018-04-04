@@ -5,6 +5,7 @@ import Projects from '@/pages/Index/Projects';
 import Schedule from '@/pages/Index/Schedule';
 import Users from '@/pages/Index/Users';
 import Statistics from '@/pages/Index/Statistics';
+import Options from '@/pages/Index/Options';
 import Register from '@/pages/Register';
 import Login from '@/pages/Login';
 import ForgetPwd from '@/pages/ForgetPwd';
@@ -45,6 +46,10 @@ export default new Router({
         {
           path: 'statistics',
           component: Statistics,
+        },
+        {
+          path: 'options',
+          component: Options,
         },
       ],
     },

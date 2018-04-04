@@ -54,7 +54,7 @@ export default {
   data() {
     return {
       username: '',
-      addedUser: this.value.slice(0),
+      // addedUser: this.value.slice(0),
     };
   },
   computed: {
@@ -67,10 +67,20 @@ export default {
       curList = this.list.filter(user => user.username.includes(this.username));
       return curList;
     },
+    addedUser: {
+      get() {
+        return this.value.slice(0);
+      },
+      set(v) {
+        this.$emit('input', v);
+      },
+    },
   },
   methods: {
     add(user) {
-      this.addedUser.indexOf(user) === -1 && this.addedUser.push(user);
+      let temp = this.addedUser.slice(0);
+      temp.indexOf(user) === -1 && temp.push(user);
+      this.addedUser = temp;
     },
     remove(id) {
       this.addedUser = this.addedUser.filter(user => user.id !== id);
@@ -85,7 +95,7 @@ export default {
 
 <style lang="scss">
 .user-list__wrapper {
-  height: 583px;
+  height: 75.9114vh;
   .el-dialog__header {
     font-size: 14px;
     border-bottom: 1px solid $border;
@@ -122,7 +132,7 @@ export default {
   @include setSize(236px, 36px);
 }
 #user-list {
-  height: 273px;
+  height: 35.547vh;
   overflow: auto;
 }
 .user__item {

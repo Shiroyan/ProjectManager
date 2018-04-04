@@ -95,7 +95,7 @@ html {
 }
 
 .el-tabs__content {
-  height: 678px !important;
+  height: 88.281vh !important;
   overflow-x: hidden;
   overflow-y: auto !important;
   &::-webkit-scrollbar {
@@ -122,4 +122,8 @@ html {
 
 .el-form-item__error {
   font-size: 11px;
+}
+.el-dialog--center .el-dialog__body {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }

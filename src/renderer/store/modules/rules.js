@@ -43,7 +43,7 @@ const rules = {
   ],
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 12, message: '长度3 - 12个字符', trigger: 'blur' },
+    { min: 2, max: 12, message: '长度2 - 12个字符', trigger: 'blur' },
   ],
   city: [
     { type: 'number', required: true, message: '请选择城市', trigger: 'change' },
@@ -113,6 +113,15 @@ const rules = {
   avaTime: [
     { required: true, type: 'number', message: '请设置工时' },
   ],
+  stageName: [
+    { required: true, type: 'string', message: '请填写阶段名' },
+  ],
+  stageDesc: [
+    { required: true, type: 'string', message: '请填写阶段描述' },
+  ],
+  stageStatus: [
+    { required: true, type: 'number', message: '请选择类别' },
+  ],
 };
 
 const state = {
@@ -143,6 +152,9 @@ const state = {
   tags: rules.tags,
   week: rules.week,
   avaTime: rules.avaTime,
+  stageName: rules.stageName,
+  stageDesc: rules.stageDesc,
+  stageStatus: rules.stageStatus,
 };
 
 export default {

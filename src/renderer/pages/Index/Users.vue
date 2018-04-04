@@ -95,7 +95,7 @@ export default {
 
 <style lang="scss" scoped>
 #users__wrapper {
-  @include setSize(50%, 690px);
+  @include setSize(50%, 100%);
   box-sizing: border-box;
   margin: 30px auto 0 auto;
   padding-bottom: 20px;

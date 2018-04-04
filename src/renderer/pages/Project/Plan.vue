@@ -375,16 +375,37 @@ export default {
 
 .add-event__dialog {
   @include absTL(40px, 2%);
-  @include setSize(96%, auto);
+  @include setSize(96%, 72vh);
   box-sizing: border-box;
   border-radius: 5px;
   background-color: #fff;
   padding: 11px 11px 5px 11px;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 16px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px #eee;
+    background-color: #bbb;
+  }
   .form__item {
     padding-bottom: 20px;
     margin-bottom: 5px;
     width: 100%;
     border-bottom: 1px solid #ddd;
+  }
+  .dialog__content {
+    height: 90%;
+    overflow: auto;
   }
   .dialog__footer {
     margin-top: 10px 0 0 0;
@@ -403,7 +424,7 @@ export default {
 .edit-event__dialog {
   .form__item {
     padding-bottom: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 0.6vh;
     width: 80%;
   }
   .form__item--inline {

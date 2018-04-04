@@ -37,8 +37,33 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="计划" name="plans">
+        <el-button icon="el-icon-my-filter" id="event__filter" @click="isShowFilter=true">筛选</el-button>
+        <div id="filter-pane__wrapper" v-show="isShowFilter">
+          <el-button icon="el-icon-close" type="text" plain id="filter-pane__close" @click="isShowFilter = false"></el-button>
+          <div class="filter-pane__group" id="time-filter">
+            <div class="group__title">按时间</div>
+            <div class="group__item" :class="{'group__item--active': curTime === index}" v-for="(time, index) in timeLine" :key="index" @click="curTime = index">
+              <span>{{time}}</span>
+            </div>
+          </div>
+          <div class="filter-pane__group" id="members-filter">
+            <div class="group__title">按成员</div>
+            <div class="group__item" :class="{'group__item--active': curUser === 0}" @click="curUser = 0">全部</div>
+            <div class="group__item" v-for="m in userList" :key="m.id" :class="{'group__item--active': curUser === m.id}" @click="curUser = m.id">
+              <user-avatar :username="m.username" :job="m.jobId" class="avatar"></user-avatar>
+              {{m.username}}
+            </div>
+          </div>
+          <div class="filter-pane__group" id="tags-filter">
+            <div class="group__title">按标签</div>
+            <div class="group__item" :class="{'group__item--active': curTag === 0}" @click="curTag = 0">全部</div>
+            <div class="group__item" v-for="t in tagList" :key="t.id" :class="{'group__item--active': curTag === t.id}" @click="curTag = t.id">
+              <mini-tag :tagName="t.name" :id="t.id"></mini-tag>
+            </div>
+          </div>
+        </div>
         <div id="plans__container">
-          <plan v-for="p in plans" :key="p.id" :userList="userList" :plan="p" @updatePlan="updatePlan" @deletePlan="deletePlan" @createEvent="createEvent" @updateEvent="updateEvent" @deleteEvent="deleteEvent" @finishEvent="finishEvent"></plan>
+          <plan v-for="p in curPlans" :key="p.id" :userList="userList" :plan="p" @updatePlan="updatePlan" @deletePlan="deletePlan" @createEvent="createEvent" @updateEvent="updateEvent" @deleteEvent="deleteEvent" @finishEvent="finishEvent"></plan>
           <transition-group mode="out-in" name="el-fade-in">
             <el-button id="add-plan-btn" icon="el-icon-plus" plain v-if="profile.isPM && !isAddPlan" @click="isAddPlan=true" key="button">新增计划</el-button>
             <div id="add-plan__form" v-if="isAddPlan" key="form">
@@ -63,6 +88,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 import UserAvatar from '@/components/UserAvatar';
+import MiniTag from '@/components/MiniTag';
 import { baseUrl } from '@/api';  // eslint-disable-line
 import api from '@/api';  // eslint-disable-line
 import ProjectDialog from './Project/ProjectDialog';
@@ -74,6 +100,7 @@ export default {
     'user-avatar': UserAvatar,
     'project-dialog': ProjectDialog,
     'del-project-dialog': DelProjectDialog,
+    'mini-tag': MiniTag,
     plan: Plan,
   },
   data() {
@@ -97,15 +124,41 @@ export default {
       isEditVisible: false,
       isDelVisible: false,
       isAddPlan: false,
+      isShowFilter: false,
       planName: '',
+      timeLine: ['全部', '未开始', '进行中', '快结束', '已完成', '已逾期'],
+      curTime: 0,
+      curUser: 0,
+      curTag: 0,
     };
   },
   computed: {
     ...mapState(['profile', 'tags', 'users']),
     userList() {
-      let members = Array.from(this.info.members);
+      let members = JSON.parse(JSON.stringify(this.info.members)); // 对象数组的深拷贝
       members.push(this.info.leader);
       return members;
+    },
+    tagList() {
+      let map = new Map();
+      let temp = [];
+      this.plans.forEach(({ events }) => {
+        events.forEach(({ tags }) => {
+          tags.forEach(tag => map.set(tag.id, tag));
+        });
+      });
+      for (let [key, val] of map) {
+        temp.push(val);
+      }
+      return temp;
+    },
+    curPlans() {
+      let afterFilter = [];
+      let plans = JSON.parse(JSON.stringify(this.plans));
+      afterFilter = this.timeFilter(this.curTime, plans);
+      afterFilter = this.userFilter(this.curUser, afterFilter);
+      afterFilter = this.tagFilter(this.curTag, afterFilter);
+      return afterFilter;
     },
   },
   methods: {
@@ -121,6 +174,67 @@ export default {
           break;
         default:
       }
+    },
+    /**
+     * 0 - 全部
+     * 1 - 未开始
+     * 2 - 进行中
+     * 3 - 快结束
+     * 4 - 已完成
+     * 5 - 已逾期
+     */
+    timeFilter(time, plans) {
+      let afterFilter = [];
+      if (time === 0) {
+        return plans;
+      }
+      for (let plan of plans) {
+        plan.events = plan.events.filter((e) => {
+          let startTime = new Date(e.startTime);
+          let endTime = new Date(e.endTime);
+          const twoDay = 1000 * 60 * 60 * 24 * 2; // 2天
+          let now = new Date();
+
+          switch (time) {
+            case 1:
+              return now < startTime;
+            case 2:
+              return (now >= startTime && now <= endTime);
+            case 3:
+              return (endTime - now < twoDay && endTime - now > 0);
+            case 4:
+              return e.isFinished;
+            case 5:
+              return now >= endTime;
+            default:
+              return true;
+          }
+        });
+        afterFilter.push(plan);
+      }
+      return afterFilter;
+    },
+    userFilter(userId, plans) {
+      if (userId === 0) {
+        return plans;
+      }
+      let afterFilter = [];
+      for (let plan of plans) {
+        plan.events = plan.events.filter(({ members }) => members.some(({ id }) => id === userId));
+        afterFilter.push(plan);
+      }
+      return afterFilter;
+    },
+    tagFilter(tagId, plans) {
+      if (tagId === 0) {
+        return plans;
+      }
+      let afterFilter = [];
+      for (let plan of plans) {
+        plan.events = plan.events.filter(({ tags }) => tags.some(({ id }) => id === tagId));
+        afterFilter.push(plan);
+      }
+      return afterFilter;
     },
     getPlans() {
       this.$api.$plans.all(this.projectId, (plans) => {
@@ -302,6 +416,108 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+#filter-pane__wrapper {
+  @include setSize(200px, 719px);
+  @include fixedTL(48px, 48px);
+  border-right: 1px solid #ddd;
+  box-sizing: border-box;
+  background-color: #fff;
+  z-index: 100;
+  box-shadow: 2px 5px 5px #ddd;
+  padding-left: 10px;
+  & div {
+    box-sizing: border-box;
+  }
+}
+#filter-pane__close {
+  float: right;
+  margin-right: 10px;
+  color: $default;
+  border: none;
+  &:hover,
+  &:focus {
+    opacity: 0.8;
+    border: none;
+  }
+}
+
+.filter-pane__group {
+  max-height: 225px;
+  overflow: auto;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+  color: $black;
+  font-size: 14px;
+  &:first-of-type {
+    border: none;
+    clear: both;
+    padding-top: 0;
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 16px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px #eee;
+    background-color: #bbb;
+  }
+}
+
+.group__title {
+  color: $tips;
+  margin-bottom: 18px;
+}
+.group__item {
+  margin-bottom: 12px;
+  cursor: pointer;
+  .avatar {
+    font-size: 12px;
+    @include setSize(32px, 32px);
+    border-radius: 16px;
+    margin-right: 10px;
+    vertical-align: middle;
+    display: inline-block;
+  }
+  &:after {
+    display: inline-block;
+    content: "\2714";
+    font-size: 14px;
+    color: $default;
+    margin-left: 40px;
+    visibility: hidden;
+  }
+  &:hover {
+    background-color: $mask;
+    color: $default;
+  }
+}
+.group__item--active {
+  background-color: $mask;
+  color: $default;
+  &:after {
+    visibility: visible;
+  }
+}
+#members-filter {
+}
+#event__filter {
+  @include absTL(0, 0);
+  @include setSize(94px, 36px);
+  padding: 0;
+  &:hover,
+  &:focus {
+    color: $default;
+    border-color: $default;
+  }
+}
 #plans__container {
   margin-top: 44px;
   white-space: nowrap;
@@ -330,6 +546,7 @@ export default {
   background-color: #eee;
   border: 1px solid #eee;
   border-radius: 5px;
+  display: inline-block;
   text-align: center;
   padding-top: 20px;
 }
@@ -372,6 +589,12 @@ export default {
   .el-tabs__nav-wrap {
     width: 500px;
     margin: 0 auto;
+  }
+}
+#event__filter {
+  [class^="el-icon-my"] {
+    font-size: 20px;
+    vertical-align: text-bottom;
   }
 }
 </style>

@@ -3,7 +3,7 @@
     <div id="schedules__wrapper">
       <el-dialog width="30.894vw" :visible.sync="isReportWorkHour">
         <div id="report-workhour__dialog">
-          <el-form :model="workHourForm" ref="workHourForm" :rules="rules" label-width="100px" label-position="left">
+          <el-form :model="workHourForm" ref="workHourForm" :rules="rules" label-width="7.32vw" label-position="left">
             <el-form-item label="起止时间" prop="week">
               <el-date-picker v-model="workHourForm.week" type="week" format="yyyy 第 WW 周" placeholder="选择周" :picker-options="pickerOptions">
               </el-date-picker>
@@ -20,7 +20,7 @@
       </el-dialog>
       <el-dialog width="30.894vw" :visible.sync="isModWorkHour">
         <div id="mod-workhour__dialog">
-          <el-form :model="modWorkHourForm" ref="modWorkHourForm" :rules="rules" label-width="100px" label-position="left">
+          <el-form :model="modWorkHourForm" ref="modWorkHourForm" :rules="rules" label-width="7.32vw" label-position="left">
             <el-form-item label="起止时间" prop="week">
               <el-date-picker v-model="modWorkHourForm.week" type="week" format="yyyy 第 WW 周" placeholder="选择周" :picker-options="pickerOptions">
               </el-date-picker>
@@ -243,7 +243,7 @@ export default {
 }
 
 #schedules__body {
-  @include setSize(1212px, 590px);
+  @include setSize(100%, 76.823vh);
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: 40px repeat(6, 1fr);

@@ -9,7 +9,7 @@
           <my-input class="input" type="password" icon="password" placeholder="请输入密码，6 - 12个字" v-model="registerForm.password"></my-input>
         </el-form-item>
         <el-form-item class="form__item" prop="username">
-          <my-input class="input" icon="username" placeholder="请输入姓名，3 - 12个字" v-model="registerForm.username"></my-input>
+          <my-input class="input" icon="username" placeholder="请输入姓名，2 - 12个字" v-model="registerForm.username"></my-input>
         </el-form-item>
         <el-form-item class="form__item" prop="city">
           <my-select class="input" icon="city" placeholder="请选择城市" v-model="registerForm.city" :options="options.citys"></my-select>
