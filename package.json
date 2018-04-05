@@ -1,6 +1,6 @@
 {
   "name": "project-manager",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "author": "Yanjiaxin <yjx@szltech.com>",
   "description": "项目管理系统",
   "license": null,
@@ -23,10 +23,17 @@
   },
   "build": {
     "productName": "项目管理系统",
-    "appId": "org.simulatedgreg.electron-vue",
+    "appId": "org.szl.projectmanager",
     "directories": {
       "output": "build"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Shiroyan",
+        "repo": "ProjectManager"
+      }
+    ],
     "files": [
       "dist/electron/**/*"
     ],
@@ -58,6 +65,8 @@
   "dependencies": {
     "axios": "^0.16.1",
     "echarts": "^4.0.4",
+    "electron-log": "^2.2.14",
+    "electron-updater": "^2.21.4",
     "element-ui": "^2.2.2",
     "normalize.css": "^8.0.0",
     "vue": "^2.3.3",

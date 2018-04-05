@@ -10,7 +10,7 @@ const dev = 'http://localhost:3000';
 const prodClient = 'http://119.29.163.209';
 const prodWeb = '';
 
-const baseUrl = dev;
+const baseUrl = prodClient;
 axios.defaults.baseURL = baseUrl;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
