@@ -1,12 +1,12 @@
 {
   "name": "project-manager",
-  "version": "0.0.67",
+  "version": "0.0.70",
   "author": "Yanjiaxin <yjx@szltech.com>",
-  "description": "项目管理系统",
+  "description": "project-manager",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {
-    "build": "node .electron-vue/build.js && electron-builder -p always",
+    "build": "node .electron-vue/build.js && electron-builder -o -w -p always",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -23,7 +23,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "项目管理系统",
+    "productName": "project-manager",
     "appId": "org.szl.projectmanager",
     "directories": {
       "output": "build"
