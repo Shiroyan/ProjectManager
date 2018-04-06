@@ -26,7 +26,7 @@ function createWindow() {
     useContentSize: true,
     width: 1366,
     autoHideMenuBar: true,
-    title: '项目管理系统',
+    title: `项目管理系统 @${app.getVersion()}`,
   });
 
   mainWindow.loadURL(winURL);
@@ -92,12 +92,12 @@ autoUpdater.on('error', (err) => {
 
 autoUpdater.on('download-progress', (progressObj) => {
   let dowloadInfo = {
-    speed: progressObj.bytesPerSecond,
-    percent: progressObj.percent,
-    size: progressObj.total,
+    speed: +(progressObj.bytesPerSecond / 1024).toFixed(2),
+    percent: +progressObj.percent.toFixed(2),
+    size: +(progressObj.total / 1024 / 1024).toFixed(2),
   };
   mainWindow.webContents.send('DOWNLOAD_MESSAGE', dowloadInfo);
-  sendStatusToWindow(JSON.stringify(dowloadInfo));
+  // sendStatusToWindow(JSON.stringify(dowloadInfo));
 });
 
 autoUpdater.on('update-downloaded', (info) => {
@@ -105,18 +105,27 @@ autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('新的安装包已下载好了, 请重启以更新 (≧∇≦)');
 });
 
-ipcMain.on('DOWNLOAD', async (event, arg) => {
-  await autoUpdater.doDownloadUpdate();
+ipcMain.on('CANCEL_UPDATE', (event, arg) => {
+});
+
+ipcMain.on('DOWNLOAD', (event, arg) => {
+  console.log('开始下载..');
+  autoUpdater.autoDownload = true;
+  autoUpdater.checkForUpdates();
 });
 
 ipcMain.on('QUIT_AND_INSTALL', (event, arg) => {
   autoUpdater.quitAndInstall();
 });
 
+ipcMain.on('INSTALL_AFTER_QUIT', (event, arg) => {
+  app.on('before-quit', () => {
+    autoUpdater.quitAndInstall();
+  });
+});
+
 app.on('ready', () => {
   if (process.env.NODE_ENV === 'production') {
-    setInterval(() => {
-      autoUpdater.checkForUpdates();
-    }, 60000);
+    autoUpdater.checkForUpdates();
   }
 });
