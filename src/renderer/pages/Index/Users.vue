@@ -4,6 +4,11 @@
       <div class="users__item" v-for="u in users.users" :key="u.id">
         <user-avatar class="user__avatar" :username="u.username" :job="u.jobId"></user-avatar>
         <div class="user__username">{{u.username}}</div>
+        <div class="user__account" >
+          <span v-if="profile.isAdmin">
+            {{u.account}}
+          </span>
+        </div>
         <div class="user__dep">{{u.depName}}</div>
         <div class="user__job">{{u.jobName}}</div>
         <div class="user__city">{{u.cityName}}</div>
@@ -131,8 +136,10 @@ export default {
 .user__username {
   color: #2e2e2e;
   font-size: 18px;
-  margin-right: 50px;
   width: 100px;
+}
+.user__account {
+  width: 150px;
 }
 
 .user__dep,
@@ -144,7 +151,6 @@ export default {
 }
 
 .edit-user {
-  margin-left: 80px;
   margin-right: 20px;
   color: $default;
   font-size: 18px;
