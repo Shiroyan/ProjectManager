@@ -87,7 +87,7 @@ export default {
   data() {
     return {
       innerVisible: false,
-      projectForm: this.info,
+      projectForm: JSON.parse(JSON.stringify(this.info)),
     };
   },
   computed: {

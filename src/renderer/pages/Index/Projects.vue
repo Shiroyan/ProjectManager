@@ -54,6 +54,7 @@ export default {
     createProject(form) {
       let tab = this.$refs.begin;
       let data = Object.assign({}, form);
+      data.members = data.members.map(u => u.id).join(',');
       delete data.process;
       delete data.stageId;
       this.$api.$projects.create(data, () => {
