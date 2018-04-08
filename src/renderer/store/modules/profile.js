@@ -8,11 +8,14 @@ const state = {
   jobId: '',
   jobName: '',
   role: -1,
+  isPM: false,
+  isAdmin: false,
 };
 
 const mutations = {
   updateProfile(state, data) {
-    let { userId, username, cityId, cityName, depId, depName, jobId, jobName, role } = data;
+    let { userId, username, cityId, cityName, depId, depName, jobId, jobName, role,
+      isAdmin, isPM } = data;
     state.userId = userId;
     state.username = username;
     state.cityId = cityId;
@@ -22,8 +25,8 @@ const mutations = {
     state.jobId = jobId;
     state.jobName = jobName;
     state.role = role;
-    state.isPM = jobId === 5 || role === 0;
-    state.isAdmin = role === 0;
+    state.isPM = isPM;
+    state.isAdmin = isAdmin;
   },
 };
 

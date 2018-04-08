@@ -17,6 +17,9 @@
         <el-form-item class="form__item" prop="job">
           <my-select class="input" icon="job" placeholder="请选择岗位" v-model="profileForm.job" :options="options.jobs"></my-select>
         </el-form-item>
+        <el-form-item class="form__item" prop="role" v-if="profile.isAdmin">
+          <my-select class="input" icon="job" placeholder="请选择角色" v-model="profileForm.role" :options="options.roles"></my-select>
+        </el-form-item>
       </div>
       <div id="btn-group">
         <el-button class="btn" id="cancel" @click="_isVisible = false">取消</el-button>
@@ -54,6 +57,7 @@ export default {
           city: -1,
           dep: -1,
           job: -1,
+          role: 2,
           newPwd: '',
         };
       },

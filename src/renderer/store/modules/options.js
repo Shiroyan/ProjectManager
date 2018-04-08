@@ -2,6 +2,7 @@ const state = {
   citys: [],
   deps: [],
   jobs: [],
+  roles: [],
 };
 
 const mutations = {
@@ -9,6 +10,7 @@ const mutations = {
     state.citys = options.citys;
     state.deps = options.deps;
     state.jobs = options.jobs;
+    state.roles = options.roles;
   },
 };
 

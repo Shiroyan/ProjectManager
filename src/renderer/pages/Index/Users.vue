@@ -1,19 +1,18 @@
 <template>
   <div>
-    <div id="users__wrapper">
+    <div id="users__wrapper" class="users__wrapper" :class="{'users__wrapper--admin': profile.isAdmin}">
       <div class="users__item" v-for="u in users.users" :key="u.id">
         <user-avatar class="user__avatar" :username="u.username" :job="u.jobId"></user-avatar>
         <div class="user__username">{{u.username}}</div>
-        <div class="user__account" >
-          <span v-if="profile.isAdmin">
+        <div class="user__account" v-if="profile.isAdmin">
             {{u.account}}
-          </span>
         </div>
         <div class="user__dep">{{u.depName}}</div>
         <div class="user__job">{{u.jobName}}</div>
         <div class="user__city">{{u.cityName}}</div>
-        <el-button type="text" icon="el-icon-edit" class="edit-user" v-if="profile.isAdmin" @click="showEditUser(u)"></el-button>
-        <el-button type="text" icon="el-icon-delete" class="del-user" v-if="profile.isAdmin" @click="showDelUser(u.id)"></el-button>
+        <div class="user__role" v-if="profile.isAdmin">{{u.roleName}}</div>
+        <el-button type="text" icon="el-icon-edit" class="edit-user" v-if="profile.isAdmin && profile.userId !== u.id " @click="showEditUser(u)"></el-button>
+        <el-button type="text" icon="el-icon-delete" class="del-user" v-if="profile.isAdmin && profile.userId !== u.id" @click="showDelUser(u.id)"></el-button>
       </div>
     </div>
     <profile-dialog :id="selectedUserId" :form="selectedUserProfile" :isVisible.sync="isEditUser" @updateProfile="updateProfileByAdmin"></profile-dialog>
@@ -53,6 +52,7 @@ export default {
         city: '',
         dep: '',
         job: '',
+        role: '',
         newPwd: '',
       },
     };
@@ -68,6 +68,7 @@ export default {
         city: user.cityId,
         dep: user.depId,
         job: user.jobId,
+        role: user.roleId,
         username: user.username,
         newPwd: '',
       };
@@ -99,8 +100,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.users__wrapper {
+  @include setSize(40%, 100%);
+}
+
+.users__wrapper--admin {
+  @include setSize(60%, 100%);
+  .edit-user {
+    margin-left: 30px;
+  }
+}
+
 #users__wrapper {
-  @include setSize(50%, 100%);
   box-sizing: border-box;
   margin: 30px auto 0 auto;
   padding-bottom: 20px;
@@ -144,7 +156,8 @@ export default {
 
 .user__dep,
 .user__job,
-.user__city {
+.user__city,
+.user__role {
   font-size: 14px;
   color: $tips;
   width: 80px;
