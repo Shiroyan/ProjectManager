@@ -43,7 +43,7 @@
           <span>{{profile.jobName}}</span>
         </div>
         <div id="profile__btn-group">
-          <el-button class="profile__btn" type="text" @click="showEditProfile">修改资料</el-button>
+          <el-button class="profile__btn" type="text" @click="showEditProfile" v-if="!profile.isAdmin">修改资料</el-button>
           <el-button class="profile__btn" type="text" @click="$router.push('/forgetPwd')" style="float: right">修改密码</el-button>
         </div>
       </el-popover>

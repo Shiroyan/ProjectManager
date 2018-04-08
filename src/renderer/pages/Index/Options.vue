@@ -3,7 +3,7 @@
     <div id="options__wrapper">
       <div class="options__list" v-for="(o, i) in optionsList" :key="i">
         <div class="list-title">{{o.title}}</div>
-        <div class="list-item__wrapper" v-for="d in o.data" :key="d.id" :class="{'list-item__wrapper--edit': `${o.type}-${d.id}` === showEdit}" v-if="!(o.type==='job'&& d.id === 5)">
+        <div class="list-item__wrapper" v-for="d in o.data" :key="d.id" :class="{'list-item__wrapper--edit': `${o.type}-${d.id}` === showEdit}">
           <div class="list-item">
             <div class="list-item__left">{{d.name}}</div>
             <div class="list-item__right">

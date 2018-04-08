@@ -54,6 +54,9 @@ const rules = {
   job: [
     { type: 'number', required: true, message: '请选择岗位', trigger: 'change' },
   ],
+  role: [
+    { type: 'number', required: true, message: '请选择角色', trigger: 'change' },
+  ],
   name: [// 项目名
     { required: true, message: '请输入项目名称', trigger: 'change' },
     { min: 3, max: 12, message: '长度3 - 12个字符', trigger: 'change' },

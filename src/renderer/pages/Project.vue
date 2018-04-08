@@ -3,8 +3,8 @@
     <el-tabs v-model="tab" @tab-click="handleClick" id="project__wrapper">
       <el-tab-pane label="基本信息" name="info">
         <div id="info__wrapper">
-          <el-button type="danger" icon="el-icon-delete" id="delete" v-if="profile.isPM" @click="isDelVisible = true">删除</el-button>
-          <el-button icon="el-icon-edit" id="edit" v-if="profile.isPM" @click="isEditVisible = true">编辑</el-button>
+          <el-button type="danger" icon="el-icon-delete" id="delete" v-if="isLeader" @click="isDelVisible = true">删除</el-button>
+          <el-button icon="el-icon-edit" id="edit" v-if="isLeader" @click="isEditVisible = true">编辑</el-button>
           <div id="info__name" class="info__item">{{info.name}}</div>
           <p id="info__start-end" class="info__item">{{info.startTime}} ~ {{info.endTime}}</p>
           <div class="info__item">
@@ -63,9 +63,9 @@
           </div>
         </div>
         <div id="plans__container">
-          <plan v-for="p in curPlans" :key="p.id" :userList="userList" :plan="p" @updatePlan="updatePlan" @deletePlan="deletePlan" @createEvent="createEvent" @updateEvent="updateEvent" @deleteEvent="deleteEvent" @finishEvent="finishEvent"></plan>
+          <plan v-for="p in curPlans" :key="p.id" :userList="userList" :plan="p" :isLeader="isLeader" @updatePlan="updatePlan" @deletePlan="deletePlan" @createEvent="createEvent" @updateEvent="updateEvent" @deleteEvent="deleteEvent" @finishEvent="finishEvent"></plan>
           <transition-group mode="out-in" name="el-fade-in">
-            <el-button id="add-plan-btn" icon="el-icon-plus" plain v-if="profile.isPM && !isAddPlan" @click="isAddPlan=true" key="button">新增计划</el-button>
+            <el-button id="add-plan-btn" icon="el-icon-plus" plain v-if="isLeader && !isAddPlan" @click="isAddPlan=true" key="button">新增计划</el-button>
             <div id="add-plan__form" v-if="isAddPlan" key="form">
               <input id="add-plan__input" placeholder="计划名, 3-10个字符" v-model="planName">
               <div id="add-plan__btn-group">
@@ -134,6 +134,9 @@ export default {
   },
   computed: {
     ...mapState(['profile', 'tags', 'users']),
+    isLeader() {
+      return this.profile.isPM && (this.profile.userId === this.info.leader.id);
+    },
     userList() {
       let members = JSON.parse(JSON.stringify(this.info.members)); // 对象数组的深拷贝
       members.push(this.info.leader);
