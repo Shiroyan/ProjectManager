@@ -18,13 +18,13 @@
     </div>
     <div class="plan__header">
       <div class="plan__name">{{plan.name}}</div>
-      <el-button class="plan__del" icon="el-icon-close" type="text" v-if="profile.isPM" @click="isDelPlan = true"></el-button>
-      <el-button class="plan__edit" icon="el-icon-edit" type="text" v-if="profile.isPM" v-popover:updatePlan></el-button>
+      <el-button class="plan__del" icon="el-icon-close" type="text" v-if="isLeader" @click="isDelPlan = true"></el-button>
+      <el-button class="plan__edit" icon="el-icon-edit" type="text" v-if="isLeader" v-popover:updatePlan></el-button>
       <div class="plan__progress" :style="progress"></div>
     </div>
     <div class="events__container">
-      <event v-for="e in plan.events" :key="e.id" :event="e" @updateEvent="updateEvent(e)" @deleteEvent="deleteEvent(e.id)" @finishEvent="finishEvent"></event>
-      <el-button id="add-event" icon="el-icon-circle-plus" type="text" v-if="profile.isPM" @click="isAddEvent = true">添加新事件</el-button>
+      <event v-for="e in plan.events" :key="e.id" :event="e" :isLeader="isLeader" @updateEvent="updateEvent(e)" @deleteEvent="deleteEvent(e.id)" @finishEvent="finishEvent"></event>
+      <el-button id="add-event" icon="el-icon-circle-plus" type="text" v-if="isLeader" @click="isAddEvent = true">添加新事件</el-button>
     </div>
     <div class="del__dialog" v-show="isDelPlan">
       <div class="dialog__content">
@@ -63,12 +63,12 @@
       <user-list :isVisible.sync="isShowUserList" :list="userList" v-model="eventAddForm.members" :appendToBody="false"></user-list>
     </div>
     <el-dialog :visible.sync="isUpdateEvent" center width="37vw" custom-class="edit-event__dialog" top="5vh">
-      <el-form :model="eventUpdateForm" ref="eventUpdateForm" :rules="rules" label-position="left" label-width="7.321vw" :disabled="!profile.isPM">
+      <el-form :model="eventUpdateForm" ref="eventUpdateForm" :rules="rules" label-position="left" label-width="7.321vw" :disabled="!isLeader">
         <el-form-item class="form__item" prop="desc" label="事件内容">
           <el-input type="textarea" :rows="3" placeholder="0 - 200个字符" v-model="eventUpdateForm.desc" resize="none"></el-input>
         </el-form-item>
         <el-form-item class="form__item" label="成员" prop="members">
-          <member-icons :list="eventUpdateForm.members" @add="isShowUserList = true" @remove="removeMember2" :showAdd="profile.isPM" :showRemove="profile.isPM"></member-icons>
+          <member-icons :list="eventUpdateForm.members" @add="isShowUserList = true" @remove="removeMember2" :showAdd="isLeader" :showRemove="isLeader"></member-icons>
         </el-form-item>
         <el-form-item class="form__item" label="起止时间">
           <div id="time-range">
@@ -95,10 +95,10 @@
           <el-checkbox v-model="eventUpdateForm.isFinished"></el-checkbox>
         </el-form-item>
         <el-form-item class="form__item" label="标签" prop="tags">
-          <tag v-model="eventUpdateForm.tags" :showAdd="profile.isPM"></tag>
+          <tag v-model="eventUpdateForm.tags" :showAdd="isLeader"></tag>
         </el-form-item>
       </el-form>
-      <div slot="footer" v-if="profile.isPM">
+      <div slot="footer" v-if="isLeader">
         <div class="dialog__footer">
           <el-button type="text" id="edit__cancel" @click="isUpdateEvent = false">取消</el-button>
           <el-button type="info" id="edit__ensure" @click="ensure('eventUpdateForm')">确定</el-button>
@@ -148,6 +148,10 @@ export default {
     userList: {
       type: Array,
       default: [],
+    },
+    isLeader: {
+      type: Boolean,
+      required: true,
     },
   },
   data() {
