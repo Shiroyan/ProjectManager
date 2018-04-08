@@ -18,7 +18,7 @@
           </project-card>
         </el-tab-pane>
       </el-tabs>
-      <el-button icon="el-icon-circle-plus" id="add-project" @click="isVisible = true">新增项目</el-button>
+      <el-button icon="el-icon-circle-plus" id="add-project" @click="isVisible = true" v-if="profile.isPM">新增项目</el-button>
       <project-dialog v-if="isVisible" :isVisible.sync="isVisible" @createProject="createProject"></project-dialog>
     </div>
   </div>
@@ -26,6 +26,7 @@
 
 <script>
 import ProjectDialog from '@/pages/Project/ProjectDialog';
+import { mapState } from 'vuex';
 import ProjectCard from './Projects/ProjectCard';
 
 export default {
@@ -43,6 +44,7 @@ export default {
       isVisible: false,
     };
   },
+  computed: mapState(['profile']),
   methods: {
     handleClick(tab, event) {
       let type = tab.name;

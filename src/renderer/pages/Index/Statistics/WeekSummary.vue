@@ -38,22 +38,22 @@
       <p class="summary__title">人员变动</p>
       <div id="summary__new-members" class="summary__item">
         <div class="summary__label">新增</div>
-        <span class="summary__value" v-for="name in sysChanges.newMembers" :key="name">{{name}}</span>
+        <span class="summary__value" v-for="(name, index) in sysChanges.newMembers" :key="index">{{name}}</span>
       </div>
       <div id="summary__del-members" class="summary__item">
         <div class="summary__label">离职</div>
-        <span class="summary__value" v-for="name in sysChanges.delMembers" :key="name">{{name}}</span>
+        <span class="summary__value" v-for="(name, index) in sysChanges.delMembers" :key="index">{{name}}</span>
       </div>
     </div>
     <div id="projects__change">
       <p class="summary__title">项目动态</p>
       <div id="summary__new-projects" class="summary__item">
         <div class="summary__label">新增</div>
-        <span class="summary__value" v-for="name in sysChanges.newProjects" :key="name">{{name}}</span>
+        <span class="summary__value" v-for="(name, index) in sysChanges.newProjects" :key="index">{{name}}</span>
       </div>
       <div id="summary__del-projects" class="summary__item">
         <div class="summary__label">删除</div>
-        <span class="summary__value" v-for="name in sysChanges.delProjects" :key="name">{{name}}</span>
+        <span class="summary__value" v-for="(name, index) in sysChanges.delProjects" :key="index">{{name}}</span>
       </div>
     </div>
   </div>

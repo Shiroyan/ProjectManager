@@ -1,6 +1,6 @@
 <template>
   <div class="event__wrapper" :style="wrapperColor">
-    <div class="event__warn" v-show="profile.isPM && event.isFinished && (event.ratio === 0 || event.realTime === 0 || event.approval === 0)"></div>
+    <div class="event__warn" v-show="isLeader && event.isFinished && (event.ratio === 0 || event.realTime === 0 || event.approval === 0)"></div>
     <div class="event__process" :style="progress">
     </div>
     <div class="event__header">
@@ -52,6 +52,10 @@ export default {
         };
       },
     },
+    isLeader: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -82,12 +86,12 @@ export default {
     isShowCheck() {
       let members = this.event.members.map(m => m.id); //  获取事件参与者所有id
       let isJoinIn = members.indexOf(this.profile.userId) !== -1; // 是否被包含
-      return this.profile.isPM || isJoinIn;
+      return this.isLeader || isJoinIn;
     },
   },
   methods: {
     showMask() {
-      this.profile.isPM ?
+      this.isLeader ?
         (this.isShowMenu = true) : this.$emit('updateEvent');
     },
     checkChange(value) {
