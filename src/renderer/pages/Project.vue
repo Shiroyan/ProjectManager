@@ -3,8 +3,8 @@
     <el-tabs v-model="tab" @tab-click="handleClick" id="project__wrapper">
       <el-tab-pane label="基本信息" name="info">
         <div id="info__wrapper">
-          <el-button type="danger" icon="el-icon-delete" id="delete" v-if="profile.isPM" @click="isDelVisible = true">删除</el-button>
-          <el-button icon="el-icon-edit" id="edit" v-if="profile.isPM" @click="isEditVisible = true">编辑</el-button>
+          <el-button type="danger" icon="el-icon-delete" id="delete" v-if="profile.isPM && profile.userId === leader.id" @click="isDelVisible = true">删除</el-button>
+          <el-button icon="el-icon-edit" id="edit" v-if="profile.isPM && profile.userId === leader.id" @click="isEditVisible = true">编辑</el-button>
           <div id="info__name" class="info__item">{{info.name}}</div>
           <p id="info__start-end" class="info__item">{{info.startTime}} ~ {{info.endTime}}</p>
           <div class="info__item">
