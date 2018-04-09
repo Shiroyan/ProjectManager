@@ -87,6 +87,13 @@ export default {
       opacity: 0.9;
     }
   }
+
+  #cancel {
+    color: #fff;
+    &:hover {
+      color: #fff;
+    }
+  }
 }
 
 #modify {
