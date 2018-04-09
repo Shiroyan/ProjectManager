@@ -175,8 +175,8 @@ const usersApi = {
 
 //#region 项目接口
 const projectsApi = {
-  getAllProjects(type, successCb) {
-    get(`/projects?type=${type}`, successCb);
+  getAllProjects(type, page, successCb) {
+    get(`/projects?type=${type}&page=${page}`, successCb);
   },
   getStages(successCb) {
     get('/projects/options', successCb);
@@ -195,6 +195,9 @@ const projectsApi = {
   },
   delete(pid, successCb) {
     $delete(`/projects/${pid}`, successCb);
+  },
+  exchange(pid, data, successCb) {
+    put(`/projects/${pid}/leader`, successCb, data);
   },
 };
 //#endregion

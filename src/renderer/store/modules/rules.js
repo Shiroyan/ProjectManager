@@ -147,6 +147,7 @@ const state = {
   planName: rules.planName,
   desc: rules.desc,
   members: rules.members,
+  leaders: rules.members,
   startEnd: rules.startEnd,
   planTime: rules.planTime,
   realTime: rules.planTime,

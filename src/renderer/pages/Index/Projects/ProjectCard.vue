@@ -7,11 +7,11 @@
     <div>
       <div class="project__leader">
         <span class="project__label">负责人</span>
-        <span class="project__value">{{data.leader}}</span>
+        <span class="project__value">{{data.leaders.join(',')}}</span>
       </div>
       <div class="project__members">
         <span class="project__label">成员</span>
-        <span class="project__value">{{data.members}}</span>
+        <span class="project__value">{{data.members.join(',')}}</span>
       </div>
       <div class="project__process">
         <span class="project__label">进度</span>
