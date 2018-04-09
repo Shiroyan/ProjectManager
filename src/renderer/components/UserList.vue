@@ -79,7 +79,8 @@ export default {
   methods: {
     add(user) {
       let temp = this.addedUser.slice(0);
-      temp.indexOf(user) === -1 && temp.push(user);
+      let ids = temp.map(u => u.id);
+      ids.indexOf(user.id) === -1 && temp.push(user);
       this.addedUser = temp;
     },
     remove(id) {

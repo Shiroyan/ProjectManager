@@ -4,6 +4,7 @@
       <el-tab-pane label="基本信息" name="info">
         <div id="info__wrapper">
           <el-button type="danger" icon="el-icon-delete" id="delete" v-if="isLeader" @click="isDelVisible = true">删除</el-button>
+          <el-button type="warning" icon="el-icon-refresh" id="exchange" v-if="isLeader" @click="isExchangeVisible = true">转让/添加</el-button>
           <el-button icon="el-icon-edit" id="edit" v-if="isLeader" @click="isEditVisible = true">编辑</el-button>
           <div id="info__name" class="info__item">{{info.name}}</div>
           <p id="info__start-end" class="info__item">{{info.startTime}} ~ {{info.endTime}}</p>
@@ -19,7 +20,7 @@
           </div>
           <div class="info__item">
             <div class="info__label">负责人</div>
-            <user-avatar id="info__leader" :username="info.leader.username" :job="info.leader.jobId">
+            <user-avatar class="info__leader" v-for="u in info.leaders" :key="u.id" :username="u.username" :job="u.jobId">
             </user-avatar>
           </div>
           <div class="info__item">
@@ -82,6 +83,7 @@
     </el-tabs>
     <project-dialog v-if="isEditVisible" mode="edit" :isVisible.sync="isEditVisible" :info="info" @updateProject="updateProject"></project-dialog>
     <del-project-dialog :isVisible.sync="isDelVisible" :projectName="info.name" @deleteProject="deleteProject"></del-project-dialog>
+    <exchange-dialog v-if="isExchangeVisible" :isVisible.sync="isExchangeVisible" :leaders="this.info.leaders" @exchangeLeader="exchangeLeader"></exchange-dialog>
   </div>
 </template>
 
@@ -93,6 +95,7 @@ import { baseUrl } from '@/api';  // eslint-disable-line
 import api from '@/api';  // eslint-disable-line
 import ProjectDialog from './Project/ProjectDialog';
 import DelProjectDialog from './Project/DelProjectDialog';
+import ExchangeDialog from './Project/ExchangeDialog';
 import Plan from './Project/Plan';
 
 export default {
@@ -100,6 +103,7 @@ export default {
     'user-avatar': UserAvatar,
     'project-dialog': ProjectDialog,
     'del-project-dialog': DelProjectDialog,
+    'exchange-dialog': ExchangeDialog,
     'mini-tag': MiniTag,
     plan: Plan,
   },
@@ -114,7 +118,7 @@ export default {
         contract: '',
         contractVal: '',
         firstParty: '',
-        leader: { username: '', jobId: 0 },
+        leaders: [],
         members: [],
         process: 0,
         stageName: '',
@@ -123,6 +127,7 @@ export default {
       baseUrl,
       isEditVisible: false,
       isDelVisible: false,
+      isExchangeVisible: false,
       isAddPlan: false,
       isShowFilter: false,
       planName: '',
@@ -135,11 +140,17 @@ export default {
   computed: {
     ...mapState(['profile', 'tags', 'users']),
     isLeader() {
-      return this.profile.isPM && (this.profile.userId === this.info.leader.id);
+      if (this.profile.isAdmin) {
+        return true;
+      }
+      let { leaders } = this.info;
+      let leaderIds = leaders.map(u => u.id);
+      return this.profile.isPM && (leaderIds.indexOf(this.profile.userId) !== -1);
     },
     userList() {
       let members = JSON.parse(JSON.stringify(this.info.members)); // 对象数组的深拷贝
-      members.push(this.info.leader);
+      let leaders = JSON.parse(JSON.stringify(this.info.leaders)); // 对象数组的深拷贝
+      members.push(...leaders);
       return members;
     },
     tagList() {
@@ -239,6 +250,15 @@ export default {
       }
       return afterFilter;
     },
+    exchangeLeader(leaders) {
+      let temp = leaders.map(({ id }) => id);
+      this.$api.$projects.exchange(this.projectId, {
+        leaders: temp.join(','),
+      }, () => {
+        this.isExchangeVisible = false;
+        this.getProjectInfo();
+      });
+    },
     getPlans() {
       this.$api.$plans.all(this.projectId, (plans) => {
         this.plans = plans;
@@ -256,7 +276,6 @@ export default {
       if (!(data.contract instanceof File)) {
         delete data.contract;
       }
-      data.leaderId = data.leader.id;
       this.$api.$projects.update(this.projectId, data, () => {
         this.isEditVisible = false;
         this.getProjectInfo();
@@ -359,7 +378,8 @@ export default {
 }
 
 #edit,
-#delete {
+#delete,
+#exchange {
   @include setSize(84px,32px);
   position: absolute;
   top: -30px;
@@ -368,11 +388,15 @@ export default {
 }
 
 #edit {
-  right: 328px;
+  right: 432px;
   &:hover {
     background-color: #eee;
     color: $default;
   }
+}
+
+#exchange {
+  right: 328px;
 }
 
 #delete {
@@ -399,7 +423,7 @@ export default {
   letter-spacing: 1px;
 }
 
-#info__leader,
+.info__leader,
 .info__members {
   margin-right: 10px;
 }

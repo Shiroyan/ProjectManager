@@ -6,16 +6,22 @@
           <h2 v-if="projects1.length===0" class="no-data-tips">暂无数据</h2>
           <project-card v-for="project in projects1" :key="project.id" :data="project">
           </project-card>
+          <el-pagination class="pagination" v-if="pageCnt1 > 1" layout="prev, pager, next" :total="total1" :page-size="pageSize" :page-count="pageCnt1" :current-page="curPage1" @current-change="curChange">
+          </el-pagination>
         </el-tab-pane>
         <el-tab-pane label="立项中" name="2" ref="begin">
           <h2 v-if="projects2.length===0" class="no-data-tips">暂无数据</h2>
           <project-card v-for="project in projects2" :key="project.id" :data="project">
           </project-card>
+          <el-pagination class="pagination" v-if="pageCnt2 > 1" layout="prev, pager, next" :total="total2" :page-size="pageSize" :page-count="pageCnt2" :current-page="curPage2" @current-change="curChange">
+          </el-pagination>
         </el-tab-pane>
         <el-tab-pane label="已结项" name="3">
           <h2 v-if="projects3.length===0" class="no-data-tips">暂无数据</h2>
           <project-card v-for="project in projects3" :key="project.id" :data="project">
           </project-card>
+          <el-pagination class="pagination" v-if="pageCnt3 > 1" layout="prev, pager, next" :total="total3" :page-size="pageSize" :page-count="pageCnt3" :current-page="curPage3" @current-change="curChange">
+          </el-pagination>
         </el-tab-pane>
       </el-tabs>
       <el-button icon="el-icon-circle-plus" id="add-project" @click="isVisible = true" v-if="profile.isPM">新增项目</el-button>
@@ -41,6 +47,16 @@ export default {
       projects1: [], //  进行中的项目
       projects2: [], //  立项中的项目
       projects3: [], //  已结项的项目
+      curPage1: 1,
+      curPage2: 1,
+      curPage3: 1,
+      total1: 0,
+      total2: 0,
+      total3: 0,
+      pageCnt1: 1,
+      pageCnt2: 1,
+      pageCnt3: 1,
+      pageSize: 9,
       isVisible: false,
     };
   },
@@ -48,10 +64,7 @@ export default {
   methods: {
     handleClick(tab, event) {
       let type = tab.name;
-      let propName = `projects${type}`;
-      this.$api.$projects.getAllProjects(type, (projects) => {
-        this[propName] = projects;
-      });
+      this.getProjects(type);
     },
     createProject(form) {
       let tab = this.$refs.begin;
@@ -65,12 +78,22 @@ export default {
         this.handleClick(tab);
       });
     },
+    getProjects(type) {
+      this.$api.$projects.getAllProjects(type, this[`curPage${type}`], ({ total, pageSize, pageCnt, projects }) => {
+        this[`projects${type}`] = projects;
+        this[`total${type}`] = total;
+        this[`pageCnt${type}`] = pageCnt;
+        this.pageSize = pageSize;
+      });
+    },
+    curChange(curPage) {
+      this[`curPage${this.tab}`] = curPage;
+      this.getProjects(this.tab);
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.$api.$projects.getAllProjects(1, (projects) => {
-        vm.projects1 = projects;
-      });
+      vm.getProjects(1);
     });
   },
 };
@@ -96,6 +119,10 @@ export default {
   margin: 200px auto 0 auto;
   width: 200px;
   color: $tips;
+}
+.pagination {
+  text-align: center;
+  margin-bottom: 50px;
 }
 </style>
 <style lang="scss">

@@ -178,8 +178,10 @@ export default {
         firstDayOfWeek: 1,
         disabledDate(time) {
           let cur = time.getTime();
+          let nextWeek = new Date();
+          nextWeek.setDate(nextWeek.getDate() + 7); //  下周
           let monday = date.getWeekStart();
-          let sunday = date.getWeekEnd();
+          let sunday = date.getWeekEnd(nextWeek);
           return cur > sunday || cur < monday;
         },
       },
