@@ -5,7 +5,7 @@
     </div>
     <div class="event__header">
       <div class="event__checkbox">
-        <el-checkbox v-model="tempEvent.isFinished" v-if="isShowCheck" @change="checkChange"></el-checkbox>
+        <el-checkbox v-model="isFinished" v-if="isShowCheck" @change="checkChange"></el-checkbox>
       </div>
       <div class="event__desc" @click="showMask">{{event.desc}}</div>
       <user-avatar :username="event.members[0].username" :job="event.members[0].jobId" class="event__avatar"></user-avatar>
@@ -59,10 +59,7 @@ export default {
   },
   data() {
     return {
-      bgColor: {},
-      label: '',
       isShowMenu: false,
-      tempEvent: this.event,
     };
   },
   computed: {
@@ -73,12 +70,61 @@ export default {
       };
     },
     wrapperColor() {
-      if (this.tempEvent.isFinished) {
+      if (this.event.isFinished) {
         return {
           backgroundColor: '#eee',
         };
       }
       return {};
+    },
+    isFinished: {
+      get() {
+        return this.event.isFinished;
+      },
+      set(v) {
+      },
+    },
+    label() {
+      const twoDay = 1000 * 60 * 60 * 24 * 2; // 2天
+      let startTime = new Date(this.event.startTime);
+      let endTime = new Date(this.event.endTime);
+      let now = new Date();
+      let label;
+      if (this.isFinished) {
+        label = '已完成';
+      } else if (now < startTime) {
+        label = `${date.format(startTime, 'yyyy-MM-dd')}开始`;
+      } else if (now >= startTime && now <= endTime) {
+        label = '进行中';
+        if (endTime - now < twoDay && endTime - now > 0) { // 离截止不足2天, 但未结束
+          label = `${date.format(endTime, 'yyyy-MM-dd')}截止`;
+        }
+      } else if (now >= endTime) {
+        label = '已逾期';
+      }
+      return label;
+    },
+    bgColor() {
+      const twoDay = 1000 * 60 * 60 * 24 * 2; // 2天
+      let startTime = new Date(this.event.startTime);
+      let endTime = new Date(this.event.endTime);
+      let now = new Date();
+      let bgColor = '#fff';
+      if (this.isFinished) {
+        bgColor = '#3f51b5';
+      } else if (now < startTime) {
+        bgColor = '#20a0ff';
+      } else if (now >= startTime && now <= endTime) {
+        bgColor = '#3f51b5';
+        if (endTime - now < twoDay && endTime - now > 0) { // 离截止不足2天, 但未结束
+          bgColor = '#E6434C';
+        }
+      } else if (now >= endTime) {
+        bgColor = '#9e9e9e';
+      }
+      return {
+        backgroundColor: bgColor,
+      };
     },
     /**
      * 只有事件的参与者才可以勾选checkbox
@@ -95,39 +141,11 @@ export default {
         (this.isShowMenu = true) : this.$emit('updateEvent');
     },
     checkChange(value) {
-      this.$emit('finishEvent', this.tempEvent.id, +value);
-      this.getLabel();
-    },
-    getLabel() {
-      const twoDay = 1000 * 60 * 60 * 24 * 2; // 2天
-      let startTime = new Date(this.event.startTime);
-      let endTime = new Date(this.event.endTime);
-      let now = new Date();
-      let bgColor = '#fff';
-      if (this.tempEvent.isFinished) {
-        this.label = '已完成';
-        bgColor = '#3f51b5';
-      } else if (now < startTime) {
-        this.label = `${date.format(startTime, 'yyyy-MM-dd')}开始`;
-        bgColor = '#20a0ff';
-      } else if (now >= startTime && now <= endTime) {
-        this.label = '进行中';
-        bgColor = '#3f51b5';
-        if (endTime - now < twoDay && endTime - now > 0) { // 离截止不足2天, 但未结束
-          this.label = `${date.format(endTime, 'yyyy-MM-dd')}截止`;
-          bgColor = '#E6434C';
-        }
-      } else if (now >= endTime) {
-        this.label = '已逾期';
-        bgColor = '#9e9e9e';
-      }
-      this.bgColor = {
-        backgroundColor: bgColor,
-      };
+      this.$emit('finishEvent', this.event.id, +value);
     },
   },
   mounted() {
-    this.getLabel();
+    // this.getLabel();
   },
 };
 </script>

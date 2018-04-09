@@ -344,7 +344,9 @@ export default {
       });
     },
     finishEvent(eventId, planId, isFinished) {
-      this.$api.$events.finish(eventId, { planId, isFinished });
+      this.$api.$events.finish(eventId, { planId, isFinished }, () => {
+        this.getPlans();
+      });
     },
   },
   beforeRouteEnter(to, from, next) {
