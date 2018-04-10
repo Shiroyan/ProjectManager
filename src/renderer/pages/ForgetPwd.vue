@@ -49,7 +49,7 @@ export default {
           this.$api.$users.modifyPwd(this.modForm, () => {
             getCookie('token')
               .then(() => this.$api.$users.logout())
-              .catch((error) => { });
+              .catch((error) => { console.error(error); });
           });
         } else {
           this.$message({

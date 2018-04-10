@@ -1,22 +1,11 @@
 import axios from 'axios';
 import { Loading, Notification } from 'element-ui';
-import env from '@/env';
 import router from '../router';
+import baseUrl from './config';
 
 const loading = Loading.service;
 const notify = Notification;
 
-
-let baseUrl = ''; // eslint-disable-line
-switch (env.NOW) {
-  case env.WEB:
-    baseUrl = ''; break;
-  case env.DEV:
-    baseUrl = 'http://localhost:3000'; break;
-  case env.CLIENT:
-    baseUrl = 'http://119.29.163.209'; break;
-  default:
-}
 
 axios.defaults.baseURL = baseUrl;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';

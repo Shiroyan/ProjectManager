@@ -35,7 +35,7 @@ function getCookie(key) {
   let cookies = Vue.prototype.$electron.remote.session.defaultSession.cookies;
   return (new Promise((resolve, reject) => {
     let cookie;
-    cookies && cookies.get({ domain: 'localhost', name: key }, (error, cookies) => {
+    cookies && cookies.get({ name: key }, (error, cookies) => {
       cookie = cookies[0];
       cookie && cookie.value ?
         resolve(cookie.value) : reject('token not found');
