@@ -6,7 +6,7 @@
           <my-input class="input" icon="account" placeholder="账号" v-model="loginForm.account"></my-input>
         </el-form-item>
         <el-form-item class="form__item" prop="password">
-          <my-input class="input" type="password" icon="password" placeholder="密码" v-model="loginForm.password"></my-input>
+          <my-input class="input" type="password" icon="password" placeholder="密码" v-model="loginForm.password" @keyup.enter.native="login('loginForm')"></my-input>
         </el-form-item>
       </div>
       <div id="forget-pwd__wrapper">

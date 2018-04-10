@@ -149,6 +149,10 @@ export default {
   color: #2e2e2e;
   font-size: 18px;
   width: 100px;
+  margin-right: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .user__account {
   width: 150px;
