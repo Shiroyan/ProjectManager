@@ -115,7 +115,7 @@ import { mapState } from 'vuex';
 import { Popover } from 'element-ui';
 import SBInput from '@/components/SBInput';
 import MemberIcons from '@/components/MemberIcons';
-import UserList from '@/components/UserList';
+import UserList from '@/components/UserListDialog';
 import DateTimePicker from '@/components/DateTimePicker';
 import { date } from '@/utils';
 import Vue from 'vue';

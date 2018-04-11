@@ -2,7 +2,6 @@
 dist/electron/*
 dist/web/*
 build/*
-src/renderer/api/config.js
 !build/icons
 coverage
 node_modules/

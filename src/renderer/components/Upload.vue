@@ -3,7 +3,7 @@
     <span @click="$refs.input.click()" id="upload__btn">
       {{val.name === '' ? '点击上传' : '重新上传'}}
     </span>
-    <input type="file" ref="input" @change="change" id="upload__input" accept=".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+    <input type="file" ref="input" @change="change" id="upload__input">
     <span id="upload__filename">{{filename}}</span>
   </div>
 

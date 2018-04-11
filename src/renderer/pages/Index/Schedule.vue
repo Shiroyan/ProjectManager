@@ -67,7 +67,7 @@
 import { mapState, mapMutations } from 'vuex';
 import { date } from '@/utils';
 import MemberIcons from '@/components/MemberIcons';
-import UserList from '@/components/UserList';
+import UserList from '@/components/UserListDialog';
 
 
 export default {

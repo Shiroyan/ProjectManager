@@ -8,15 +8,19 @@
         </el-menu-item>
         <el-menu-item index="/schedule" class="nav__item" title="日程">
           <i class="el-icon-my-schedule"></i>
-          <span slot="title">日程</span>          
+          <span slot="title">日程</span>
         </el-menu-item>
         <el-menu-item index="/users" class="nav__item" title="用户组">
           <i class="el-icon-my-users"></i>
-          <span slot="title">用户组</span>                    
+          <span slot="title">用户组</span>
         </el-menu-item>
         <el-menu-item index="/statistics" class="nav__item" title="统计">
           <i class="el-icon-my-statistics"></i>
           <span slot="title">统计</span>
+        </el-menu-item>
+        <el-menu-item index="/daily" class="nav__item" title="日报">
+          <i class="el-icon-my-daily"></i>
+          <span slot="title">日报</span>
         </el-menu-item>
         <el-menu-item index="/options" class="nav__item" title="选项设置" v-if="profile.isAdmin">
           <i class="el-icon-my-options"></i>

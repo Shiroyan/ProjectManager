@@ -17,7 +17,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 import MemberIcons from '@/components/MemberIcons';
-import UserList from '@/components/UserList';
+import UserList from '@/components/UserListDialog';
 
 
 export default {

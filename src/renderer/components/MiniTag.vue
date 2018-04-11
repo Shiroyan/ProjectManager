@@ -38,7 +38,7 @@ export default {
   computed: {
     style() {
       return {
-        backgroundColor: colors[this.id],
+        backgroundColor: colors[(this.id % 11)],
       };
     },
   },

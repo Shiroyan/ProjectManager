@@ -45,7 +45,7 @@
 import { mapState, mapMutations } from 'vuex';
 import SBInput from '@/components/SBInput';
 import MemberIcons from '@/components/MemberIcons';
-import UserList from '@/components/UserList';
+import UserList from '@/components/UserListDialog';
 import Upload from '@/components/Upload';
 import DateTimePicker from '@/components/DateTimePicker';
 
@@ -132,7 +132,7 @@ export default {
     },
     ...mapMutations(['updateUsers', 'updateStages']),
   },
-  mounted() {
+  created() {
     this.users.users.length === 0
       && this.$api.$users.getUsersList(users => this.updateUsers(users));
     this.stages.stages.length === 0
