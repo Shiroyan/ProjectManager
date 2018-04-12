@@ -87,6 +87,13 @@ const date = {
     return fmt;
   },
   /**
+   * 获取当月最后一天
+   */
+  getLastDateOfMonth() {
+    let now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+  },
+  /**
    * 计算当月第一天在日历中的位置, 不传参数即为当月
    * @param {number} year 年份
    * @param {number} month 从1开始， 1~12

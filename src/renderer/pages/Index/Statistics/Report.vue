@@ -126,7 +126,10 @@ export default {
     },
     planChartData() {
       let data = this.report.projects.map((project) => {
-        let { planTime, name, id } = project;
+        let { planTime, realTime, name, id } = project;
+        if (this.type === 'real') {
+          return { value: realTime, name, id };
+        }
         return { value: planTime, name, id };
       });
       return data;
@@ -172,6 +175,12 @@ export default {
     });
   },
   mounted() {
+    let seriesName = '计划时间';
+    if (this.type === 'real') {
+      seriesName = '实际时间';
+    }
+    let formatter = `{projectName|{b}}\n{label|${seriesName}}   {per|{c}h}\n{label|占比}   {per|{d}%}`;
+
     this.pie = ECharts.init(this.$refs.chart);
     let option = {
       backgroundColor: '#fff',
@@ -196,15 +205,15 @@ export default {
       },
       series: [
         {
-          name: '计划时间',
+          name: seriesName,
           type: 'pie',
           radius: '80%',
-          center: ['40%', '50%'],
+          center: ['45%', '50%'],
           data: [],
           roseType: 'radius',
           label: {
             normal: {
-              formatter: '{projectName|{b}}\n{label|计划时间}   {per|{c}h}\n{label|占比}   {per|{d}%}',
+              formatter,
               backgroundColor: '#fff',
               width: 150,
               height: 100,

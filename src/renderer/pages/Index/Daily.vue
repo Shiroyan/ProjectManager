@@ -5,33 +5,36 @@
         <user-list :curDepId="curDepId" :curUser="curUser" @depChange="depChange" @userChange="userChange"></user-list>
       </div>
       <div id="main__wrapper">
+        <el-date-picker id="daily-month" v-model="dailyMonth" :picker-options="onlyBeforeThisMonth" @change="monthChange" type="month" align="center" placeholder="选择月份" format="yyyy 年 MM 月" prefix-icon="none">
+        </el-date-picker>
         <div id="add-daily__wrapper">
           <el-button @click="showAddDaily" icon="el-icon-edit-outline" type="primary" id="add-daily" v-if="isMenuVisible" size="small">撰写日报</el-button>
         </div>
-        <transition name="el-fade-in-linear">
+        <transition name="el-zoom-in-top">
           <div id="add-daily__form" v-show="isAddDaily">
             <div class="timeline__point"></div>
             <div class="form__item daily-date">
               <div class="form__label">日期</div>
-              <el-date-picker v-model="dailyDate" :picker-options="pickerOptions" type="date" align="center" placeholder="选择日期">
+              <el-date-picker v-model="dailyDate" :picker-options="onlyThisWeek" @change="dateChange" type="date" align="center" placeholder="选择日期">
               </el-date-picker>
             </div>
+            <div class="no-event-tips" v-show="events.length === 0">* 若出现没有事件填写的情况，请联系项目负责人为您添加</div>
             <div class="form__item" v-for="e in events" :key="e.id">
               <div class="form__label">{{e.desc}}</div>
-              <el-input-number v-model="e.dailyRealTime" :controls="false"></el-input-number>
+              <el-input-number v-model="e.dailyRealTime" :controls="false" @change="genBaseContent"></el-input-number>
             </div>
             <div class="form__item">
               <div class="form__label">内容</div>
-              <el-input type="textarea" resize="none" size="mini" :autosize="{minRows: 4}"></el-input>
+              <el-input v-model="dailyContent" type="textarea" resize="none" size="mini" :autosize="{minRows: 4}"></el-input>
             </div>
             <div class="form__btn-group">
               <el-button id="cancel" @click="isAddDaily=false" size="small">取消</el-button>
-              <el-button id="submit" @click="isAddDaily=false" type="primary" size="small">提交</el-button>
+              <el-button id="submit" @click="addDaily" type="primary" size="small" :disabled="events.length === 0">提交</el-button>
             </div>
           </div>
         </transition>
-
-        <daily-item :isMenuVisible="isMenuVisible"></daily-item>
+        <div class="no-daily-tips" v-show="dailies.length === 0">暂无日报</div>
+        <daily-item v-for="d in dailies" :key="d.id" :daily="d" :isMenuVisible="isMenuVisible" @update="updateDaily" @delete="deleteDaily"></daily-item>
       </div>
     </div>
   </div>
@@ -44,6 +47,7 @@ import DailyItem from './Daily/DailyItem';
 
 const MON = date.getWeekStart();
 const SUN = date.getWeekEnd();
+const LAST_DATE = date.getLastDateOfMonth();
 
 export default {
   name: 'Daily',
@@ -56,12 +60,20 @@ export default {
       curDepId: 1,
       curUser: -1,
       events: [],
+      dailies: [],
+      dailyMonth: new Date(),
       dailyDate: new Date(),
       isAddDaily: false,
-      pickerOptions: {
+      dailyContent: '',
+      onlyThisWeek: {
         firstDayOfWeek: 1,
         disabledDate(time) {
           return time > SUN || time < MON;
+        },
+      },
+      onlyBeforeThisMonth: {
+        disabledDate(time) {
+          return time > LAST_DATE;
         },
       },
     };
@@ -74,11 +86,22 @@ export default {
   },
   methods: {
     ...mapMutations(['updateProfile']),
+    genBaseContent() {
+      let content = this.events.map(({ desc, dailyRealTime }) => `${desc} —— ${dailyRealTime}h`);
+      this.dailyContent = content.join('\n');
+    },
     userChange(userId) {
       this.curUser = userId;
+      this.getDailies(this.curUser);
     },
     depChange(id) {
       this.curDepId = id;
+    },
+    getDailies(userId, dailyMonth = new Date()) {
+      dailyMonth = date.format(dailyMonth, 'yyyy-MM-dd');
+      this.$api.$daily.abstract(userId, dailyMonth, (dailies) => {
+        this.dailies = dailies;
+      });
     },
     getAddEvents(dailyDate) {
       let dailyDateStr = date.format(dailyDate, 'yyyy-MM-dd');
@@ -92,17 +115,66 @@ export default {
         });
       }, dailyDateStr);
     },
+    dateChange(dailyDate) {
+      this.getAddEvents(dailyDate);
+    },
+    monthChange(dailyMonth) {
+      this.getDailies(this.curUser, dailyMonth);
+    },
     showAddDaily() {
       this.getAddEvents(this.dailyDate);
       this.isAddDaily = true;
     },
+    addDaily() {
+      let dailyDateStr = date.format(this.dailyDate, 'yyyy-MM-dd');
+      let detail = {};
+      this.events.forEach(({ id, dailyRealTime }) => {
+        detail[id] = dailyRealTime;
+      });
+      this.$api.$daily.add({
+        date: dailyDateStr,
+        detail: JSON.stringify(detail),
+        content: this.dailyContent,
+      }, () => {
+        this.isAddDaily = false;
+        this.getDailies(this.curUser);
+      });
+    },
+    updateDaily(data) {
+      let dailyDateStr = date.format(data.date, 'yyyy-MM-dd');
+      let detail = {};
+      data.events.forEach(({ id, dailyRealTime }) => {
+        detail[id] = dailyRealTime;
+      });
+      this.$api.$daily.update({
+        dailyId: data.dailyId,
+        date: dailyDateStr,
+        detail: JSON.stringify(detail),
+        content: data.content,
+      }, () => this.getDailies(this.curUser, this.dailyMonth));
+    },
+    deleteDaily(dailyId, dailyDate) {
+      let dailyDateStr = date.format(dailyDate, 'yyyy-MM-dd');
+      this.$confirm('此操作将永久删除该日报, 是否继续?', '警告', {
+        type: 'error',
+        confirmButtonClass: 'confirm-delete',
+      }).then(() => {
+        this.$api.$daily.delete(dailyId, dailyDateStr,
+          () => this.getDailies(this.curUser, this.dailyMonth));
+      }).catch(() => { });
+    },
   },
   created() {
-    this.profile.username === '' ?
+    if (this.profile.username === '') {
       this.$api.$users.getProfile((data) => {
         this.updateProfile(data);
         this.curUser = this.profile.userId;
-      }) : (this.curUser = this.profile.userId);
+        this.getDailies(this.curUser);
+      });
+    } else {
+      this.curUser = this.profile.userId;
+      this.getDailies(this.curUser);
+    }
   },
 };
 </script>
@@ -127,7 +199,7 @@ export default {
 #main__wrapper {
   @include setSize(1016px, 100%);
   float: right;
-  padding: 72px 0 0 120px;
+  padding: 72px 0 30px 120px;
   overflow-y: auto;
   &::-webkit-scrollbar {
     width: 8px;
@@ -146,6 +218,12 @@ export default {
     background-color: #bbb;
   }
 }
+
+.no-daily-tips {
+  font-size: 28px;
+  color: $tips;
+}
+
 #add-daily__wrapper {
   text-align: right;
   margin-bottom: 40px;
@@ -180,6 +258,11 @@ export default {
     @include flex(flex-start);
     margin-bottom: 15px;
   }
+  .no-event-tips {
+    margin-bottom: 15px;
+    color: $danger;
+    font-size: 14px;
+  }
 
   .form__label {
     width: 100px;
@@ -191,11 +274,12 @@ export default {
     color: $tips;
   }
   .form__btn-group {
-    margin: 20px 0 30px 80px;
+    margin: 40px 0 30px 100px;
   }
 }
 
 #cancel {
+  width: 100px;
   margin-right: 10px;
   color: $black;
   &:hover {
@@ -203,6 +287,7 @@ export default {
   }
 }
 #submit {
+  width: 100px;
   background-color: $default;
   border: none;
   &:hover,
@@ -218,6 +303,18 @@ export default {
   .el-input,
   .el-input__inner {
     width: 100%;
+    text-align: center;
   }
+}
+#daily-month {
+  border: none;
+  font-size: 28px;
+  padding: 0;
+  margin-bottom: 30px;
+}
+.confirm-delete {
+  background-color: $danger !important;
+  color: #fff !important;
+  border: none !important;
 }
 </style>

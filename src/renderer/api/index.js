@@ -296,6 +296,28 @@ const optionsApi = {
   },
 };
 //#endregion
+
+//#region 日报接口
+const dailyApi = {
+  add(data, successCb) {
+    post('/dailies', successCb, data);
+  },
+  abstract(userId, date, successCb) {
+    get(`/dailies?uid=${userId}&date=${date}`, successCb);
+  },
+  detail(dailyId, date, successCb) {
+    get(`/dailies/${dailyId}?date=${date}`, successCb);
+  },
+  update(data, successCb) {
+    put('/dailies', successCb, data);
+  },
+  delete(dailyId, dailyDate, successCb) {
+    $delete(`/dailies/${dailyId}`, successCb, {
+      date: dailyDate,
+    });
+  },
+};
+//#endregion
 export default {
   $users: usersApi,
   $projects: projectsApi,
@@ -304,6 +326,7 @@ export default {
   $sta: staApi,
   $sche: scheduleApi,
   $options: optionsApi,
+  $daily: dailyApi,
 };
 
 export {
