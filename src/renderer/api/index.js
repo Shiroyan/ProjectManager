@@ -225,11 +225,11 @@ const eventsApi = {
   finish(eventId, data, successCb) {
     put(`events/${eventId}/status`, successCb, data);
   },
-  get(uid, successCb, startTime, endTime) {
-    if (!startTime || !endTime) {
-      get(`/events?uid=${uid}`, successCb);
+  get(successCb, date) {
+    if (!date) {
+      get('/events', successCb);
     } else {
-      get(`events?uid=${uid}&startTime=${startTime}&endTime=${endTime}`, successCb);
+      get(`events?date=${date}`, successCb);
     }
   },
 };
