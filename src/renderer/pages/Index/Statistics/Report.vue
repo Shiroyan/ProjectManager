@@ -134,6 +134,16 @@ export default {
       });
       return data;
     },
+    approvalData() {
+      if (this.type === 'real') {
+        let data = this.report.projects.map((project) => {
+          let { approval, name, id } = project;
+          return { value: approval, name, id };
+        });
+        return data;
+      }
+      return [];
+    },
   },
   methods: {
     getFontColor(val, ragneChange = false) {
@@ -168,11 +178,23 @@ export default {
     },
   },
   updated() {
-    this.pie && this.pie.setOption({
-      series: [{
-        data: this.planChartData,
-      }],
-    });
+    if (this.type === 'plan') {
+      this.pie && this.pie.setOption({
+        series: [{
+          data: this.planChartData,
+        }],
+      });
+    } else {
+      this.pie && this.pie.setOption({
+        series: [
+          {
+            data: this.approvalData,
+          },
+          {
+            data: this.planChartData,
+          }],
+      });
+    }
   },
   mounted() {
     let seriesName = '计划时间';
@@ -181,7 +203,6 @@ export default {
     }
     let formatter = `{projectName|{b}}\n{label|${seriesName}}   {per|{c}h}\n{label|占比}   {per|{d}%}`;
 
-    this.pie = ECharts.init(this.$refs.chart);
     let option = {
       backgroundColor: '#fff',
 
@@ -204,76 +225,157 @@ export default {
         },
       },
       series: [
-        {
-          name: seriesName,
-          type: 'pie',
-          radius: '80%',
-          center: ['45%', '50%'],
-          data: [],
-          roseType: 'radius',
-          label: {
-            normal: {
-              formatter,
-              backgroundColor: '#fff',
-              width: 150,
-              height: 100,
-              padding: [15, 20],
-              borderWidth: 1,
-              borerColor: '#ddd',
-              shadowColor: '#dedede',
-              shadowBlur: 5,
-              textStyle: {
-                fontSize: 14,
-                color: '#5E5E5E',
-                lineHeight: 30,
-                align: 'center',
-              },
-              rich: {
-                projectName: {
-                  color: '#5E5E5E',
-                  fontSize: 16,
-                  align: 'center',
-                },
-                label: {
-                  color: '#9e9e9e',
-                  fontSize: 14,
-                  align: 'center',
-                },
-                per: {
-                  fontWeight: 'bold',
-                  align: 'center',
-                  fontSize: 14,
-                },
-              },
-            },
-          },
-          labelLine: {
-            normal: {
-              lineStyle: {
-                color: '#5E5E5E',
-              },
-              smooth: 0.2,
-              length: 20,
-              length2: 20,
-            },
-          },
-          itemStyle: {
-            normal: {
-              color: '#3f51b5',
-              shadowBlur: 200,
-              shadowColor: 'rgba(0, 0, 0, 0)',
-            },
-          },
 
-          animationType: 'scale',
-          animationEasing: 'elasticOut',
-          animationDelay: function (idx) {
-            return Math.random() * 200;
-          },
-        },
       ],
     };
-    this.pie.setOption(option);
+
+    let baseSeries = {
+      name: seriesName,
+      type: 'pie',
+      radius: '70%',
+      center: ['45%', '50%'],
+      data: [],
+
+      animationType: 'scale',
+      animationEasing: 'elasticOut',
+      animationDelay: function (idx) {
+        return Math.random() * 200;
+      },
+    };
+
+
+    this.pie = ECharts.init(this.$refs.chart);
+
+    if (this.type === 'plan') {
+      let temp = Object.assign({}, baseSeries);
+      let formatter = '{projectName|{b}}\n{label|计划时间}   {per|{c}h}\n{label|占比}   {per|{d}%}';
+      let planSerie = Object.assign(temp, {
+        name: '计划时间',
+        roseType: 'radius',
+        label: {
+          normal: {
+            formatter,
+            backgroundColor: '#fff',
+            width: 150,
+            height: 100,
+            padding: [15, 20],
+            borderWidth: 1,
+            borerColor: '#ddd',
+            shadowColor: '#dedede',
+            shadowBlur: 5,
+            textStyle: {
+              fontSize: 14,
+              color: '#5E5E5E',
+              lineHeight: 30,
+              align: 'center',
+            },
+            rich: {
+              projectName: {
+                color: '#5E5E5E',
+                fontSize: 16,
+                align: 'center',
+              },
+              label: {
+                color: '#9e9e9e',
+                fontSize: 14,
+                align: 'center',
+              },
+              per: {
+                fontWeight: 'bold',
+                align: 'center',
+                fontSize: 14,
+              },
+            },
+          },
+        },
+        labelLine: {
+          normal: {
+            lineStyle: {
+              color: '#5E5E5E',
+            },
+            smooth: 0.2,
+            length: 20,
+            length2: 20,
+          },
+        },
+      });
+      option.series.push(planSerie);
+      this.pie.setOption(option);
+    } else {
+      let temp1 = Object.assign({}, baseSeries);
+      let temp2 = Object.assign({}, baseSeries);
+      let formatter1 = '{projectName|{b}}\n{label|实际时间}   {per|{c}h}\n{label|占比}   {per|{d}%}';
+      let formatter2 = '{projectName|{b}}\n{label|核准时间}   {per|{c}h}\n{label|占比}   {per|{d}%}';
+
+      let realSeries = Object.assign(temp1, {
+        name: '实际时间',
+        radius: ['40%', '55%'],
+        label: {
+          normal: {
+            formatter: formatter1,
+            backgroundColor: '#fff',
+            width: 150,
+            height: 100,
+            padding: [15, 20],
+            borderWidth: 1,
+            borerColor: '#ddd',
+            shadowColor: '#dedede',
+            shadowBlur: 5,
+            textStyle: {
+              fontSize: 14,
+              color: '#5E5E5E',
+              lineHeight: 30,
+              align: 'center',
+            },
+            rich: {
+              projectName: {
+                color: '#5E5E5E',
+                fontSize: 16,
+                align: 'center',
+              },
+              label: {
+                color: '#9e9e9e',
+                fontSize: 14,
+                align: 'center',
+              },
+              per: {
+                fontWeight: 'bold',
+                align: 'center',
+                fontSize: 14,
+              },
+            },
+          },
+        },
+        labelLine: {
+          normal: {
+            lineStyle: {
+              color: '#5E5E5E',
+            },
+            smooth: 0.2,
+            length: 20,
+            length2: 20,
+          },
+        },
+      });
+      let approvalSeries = Object.assign(temp2, {
+        name: '核准时间',
+        radius: [0, '30%'],
+
+        label: {
+          normal: {
+            position: 'inner',
+          },
+        },
+        labelLine: {
+          normal: {
+            show: false,
+          },
+        },
+      });
+      option.series.push(approvalSeries, realSeries);
+      this.pie.setOption(option);
+    }
+
     this.pie.on('click', ({ data }) => {
       let { id } = data;
       id && this.$router.push(`/project/${id}`);
