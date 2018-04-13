@@ -2,16 +2,12 @@
   <div style="height: 100%">
     <div id="sta__wrapper">
       <div id="user-list__wrapper">
-        <user-list
-          :curDepId="curDepId"
-          :curUser="curUser"
-          @depChange="depChange"
-          @userChange="userChange"></user-list>
+        <user-list :curDepId="curDepId" :curUser="curUser" @depChange="depChange" @userChange="userChange"></user-list>
       </div>
       <div id="main__wrapper">
         <el-tabs v-model="tab" @tab-click="handleTabClick">
           <el-tab-pane label="概要" name="summary">
-            <week-summary :sysChanges="sysChanges" @findHistory="getChanges" @genReport="genReport"></week-summary>
+            <week-summary :sysChanges="sysChanges" @findHistory="getChanges" @genReport="genReport" @genMonthReport="genMonthReport"></week-summary>
           </el-tab-pane>
           <el-tab-pane label="计划" name="plan">
             <report :report="planReport" @findHistoryReport="findHistoryReport"></report>
@@ -107,6 +103,9 @@ export default {
     },
     genReport(startTime, endTime, type, cb) {
       this.$api.$sta.excel(type, startTime, endTime, cb);
+    },
+    genMonthReport(date, cb) {
+      this.$api.$sta.month(date, cb);
     },
     getPlan(userId, startTime, endTime) {
       userId = userId === -1 ? this.profile.userId : userId;

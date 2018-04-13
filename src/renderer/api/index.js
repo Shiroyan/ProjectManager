@@ -266,6 +266,16 @@ const staApi = {
       get(`statistics/${userId}/real?startTime=${startTime}&endTime=${endTime}`, successCb) :
       get(`statistics/${userId}/real`, successCb);
   },
+  month(date, successCb) {
+    let callback = (data) => {
+      let a = document.createElement('a');
+      a.href = data.url;
+      a.download = '';
+      a.click();
+      successCb && successCb();
+    };
+    get(`/statistics/excel/monthreport/url?date=${date}`, callback);
+  },
 };
 //#endregion
 

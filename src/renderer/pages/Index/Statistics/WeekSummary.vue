@@ -25,11 +25,20 @@
         </div>
         <p style="font-size:12px;color:#9e9e9e;margin:0;" v-show="reportType==='real'">* 实际表最新数据只有上周的~</p>
       </div>
-      <div slot="footer" id="footer">
+      <div slot="footer">
         <el-button id="gen-report__ensure" plain @click="genReport">确认</el-button>
       </div>
     </el-dialog>
+    <el-dialog :visible.sync="isGenMonthReport" center width="27.818vw" custom-class="gen-report__dialog">
+      <div style="text-align: center">
+        <el-date-picker id="month-report__picker" v-model="month" :picker-options="onlyBeforeThisMonth" type="month" align="center" placeholder="选择月份" format="yyyy 年 MM 月"></el-date-picker>
+      </div>
+      <div slot="footer">
+        <el-button id="gen-report__ensure" plain @click="genMonthReport">确认</el-button>
+      </div>
+    </el-dialog>
     <div class="btns">
+      <el-button id="gen-month-report" class="btn" icon="el-icon-my-gen-report" plain @click="isGenMonthReport = true">生成月报</el-button>
       <el-button id="gen-report" class="btn" icon="el-icon-my-gen-report" plain @click="isGenReport = true">生成报表</el-button>
       <el-button id="find-history" class="btn" icon="el-icon-my-history" plain v-popover:findHistory>查找记录</el-button>
     </div>
@@ -63,6 +72,8 @@
 import DateTimePicker from '@/components/DateTimePicker';
 import { date } from '@/utils';
 
+const LAST_DATE = date.getLastDateOfMonth();
+
 export default {
   name: 'WeekSummary',
   components: {
@@ -87,12 +98,19 @@ export default {
     return {
       isFindHistory: false,
       isGenReport: false,
+      isGenMonthReport: false,
       historyStartEnd: [],
+      month: new Date(),
       reportStartEnd: [
         date.format(date.getWeekStart(), 'yyyy-MM-dd hh:mm:ss'),
         date.format(date.getWeekEnd(), 'yyyy-MM-dd hh:mm:ss'),
       ],
       reportType: 'plan',
+      onlyBeforeThisMonth: {
+        disabledDate(time) {
+          return time > LAST_DATE;
+        },
+      },
     };
   },
   methods: {
@@ -123,6 +141,13 @@ export default {
         });
       }
     },
+    genMonthReport() {
+      let month = date.format(this.month, 'yyyy-MM');
+      console.log(month);
+      this.$emit('genMonthReport', month, () => {
+        this.isGenMonthReport = false;
+      });
+    },
   },
 };
 </script>
@@ -131,16 +156,17 @@ export default {
   width: 100%;
   overflow: hidden;
   #find-history,
-  #gen-report {
+  #gen-report,
+  #gen-month-report {
     float: right;
-    margin-right: 20px;
+    margin-right: 15px;
     &:hover,
     &:focus {
       color: $default;
       border-color: $default;
     }
   }
-  #gen-report {
+  #gen-month-report {
     margin-right: 60px;
   }
   .btn {
@@ -149,6 +175,7 @@ export default {
     font-size: 13px;
   }
 }
+
 #summary__time,
 #members__change,
 #projects__change {
@@ -212,6 +239,10 @@ i.el-icon-my-gen-report {
   .el-date-editor .el-range__close-icon {
     width: 0;
   }
+}
+
+#month-report__picker {
+  border: none;
 }
 </style>
 
