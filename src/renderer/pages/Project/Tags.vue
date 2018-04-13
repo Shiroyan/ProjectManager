@@ -5,7 +5,7 @@
     </el-tag>
     <el-popover ref="tagList" placement="right">
       <div class="tag-list">
-        <div v-for="t in tags.tags" :key="t.id" class="tag-list__tag" @click="add(t)" :style="{ backgroundColor: colors[t.id]}">{{t.name}}</div>
+        <div v-for="t in tags.tags" :key="t.id" class="tag-list__tag" @click="add(t)" :style="{ backgroundColor: colors[t.id % 11]}">{{t.name}}</div>
       </div>
     </el-popover>
     <el-button class="add-btn" type="text" icon="el-icon-circle-plus" size="small" v-popover:tagList v-if="showAdd"></el-button>
