@@ -143,7 +143,6 @@ export default {
     },
     genMonthReport() {
       let month = date.format(this.month, 'yyyy-MM');
-      console.log(month);
       this.$emit('genMonthReport', month, () => {
         this.isGenMonthReport = false;
       });
