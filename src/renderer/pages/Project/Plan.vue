@@ -4,7 +4,7 @@
       <el-popover ref="updatePlan" placement="bottom" width="18.301vw" v-model="isUpdatePlan">
         <el-form :model="planUpdateForm" ref="planUpdateForm" :rules="rules" label-position="left" label-width="5vw">
           <el-form-item class="form__item" prop="planName" label="计划名">
-            <sb-input v-model="planUpdateForm.planName" placeholder="计划名，3-10个字符"></sb-input>
+            <sb-input v-model="planUpdateForm.planName" placeholder="计划名，3-20个字符"></sb-input>
           </el-form-item>
           <el-form-item class="form__item" label="进度">
             <el-slider id="process" v-model="planUpdateForm.process" show-input :show-input-controls="false" input-size="mini"></el-slider>
@@ -182,7 +182,7 @@ export default {
           nextWeek.setDate(nextWeek.getDate() + 7); //  下周
           let monday = date.getWeekStart();
           let sunday = date.getWeekEnd(nextWeek);
-          return cur > sunday || cur < monday;
+          return cur > sunday;
         },
       },
       eventUpdateForm: {

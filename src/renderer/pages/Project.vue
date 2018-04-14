@@ -68,7 +68,7 @@
           <transition-group mode="out-in" name="el-fade-in">
             <el-button id="add-plan-btn" icon="el-icon-plus" plain v-if="isLeader && !isAddPlan" @click="isAddPlan=true" key="button">新增计划</el-button>
             <div id="add-plan__form" v-if="isAddPlan" key="form">
-              <input id="add-plan__input" placeholder="计划名, 3-10个字符" v-model="planName">
+              <input id="add-plan__input" placeholder="计划名, 3-20个字符" v-model="planName">
               <div id="add-plan__btn-group">
                 <el-button id="cancel" type="text" size="mini" @click="isAddPlan=false">取消</el-button>
                 <el-button id="add" type="text" size="mini" @click="createPlan">确定</el-button>
@@ -294,8 +294,8 @@ export default {
     },
     createPlan() {
       let len = this.planName.length;
-      if (len < 3 || len > 10) {
-        this.$message.error({ message: '字符3-10个', center: true });
+      if (len < 3 || len > 20) {
+        this.$message.error({ message: '字符3 - 20个', center: true });
       } else {
         this.isAddPlan = false;
         this.$api.$plans.add({

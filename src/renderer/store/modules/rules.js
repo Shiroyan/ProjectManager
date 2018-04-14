@@ -85,7 +85,7 @@ const rules = {
   ],
   planName: [
     { required: true, message: '请输入计划名', trigger: 'blur' },
-    { min: 3, max: 10, message: '长度3-10个字符', trigger: 'blur' },
+    { min: 3, max: 20, message: '长度3-20个字符', trigger: 'blur' },
   ],
   desc: [
     { required: true, message: '请输入事件内容', trigger: 'blur' },
