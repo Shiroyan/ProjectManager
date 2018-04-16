@@ -96,9 +96,12 @@ export default {
 
 .project__members .project__value {
   width: 200px;
+  max-height: 50px;
   vertical-align: text-top;
   word-wrap: break-word;
   word-break: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #progress {

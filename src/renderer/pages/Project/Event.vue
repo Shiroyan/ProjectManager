@@ -190,7 +190,8 @@ export default {
   white-space: normal;
 }
 .event__avatar {
-  @include setSize(28px, 28px);
+  height: 28px;
+  min-width: 28px;
   line-height: 28px;
   font-size: 12px;
   float: right;

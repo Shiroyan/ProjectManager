@@ -44,7 +44,7 @@
           <div id="year-month">{{year}} 年 {{month}} 月</div>
           <el-button id="next-month" type="text" icon="el-icon-arrow-right" @click="nextMonth"></el-button>
         </div>
-        <el-button id="filter" icon="el-icon-my-filter">筛选</el-button>
+        <!-- <el-button id="filter" icon="el-icon-my-filter">筛选</el-button> -->
         <el-button id="workhour" @click="isReportWorkHour = true">汇报工时</el-button>
         <el-button id="modify" type="warning" v-if="profile.isPM" @click="isModWorkHour = true">修改工时</el-button>
       </div>

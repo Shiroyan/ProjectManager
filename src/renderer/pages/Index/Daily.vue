@@ -33,7 +33,7 @@
             </div>
           </div>
         </transition>
-        <div class="no-daily-tips" v-show="dailies.length === 0">暂无日报</div>
+        <div class="no-daily-tips" v-show="dailies.length === 0 && !isAddDaily">暂无日报</div>
         <daily-item v-for="d in dailies" :key="d.id" :daily="d" :isMenuVisible="isMenuVisible" @update="updateDaily" @delete="deleteDaily"></daily-item>
       </div>
     </div>

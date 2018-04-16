@@ -12,7 +12,7 @@
           <el-button icon="el-icon-plus" type="text" class="add" @click="add(u)"></el-button>
         </div>
       </div>
-      <div slot="footer">
+      <div>
         <p class="tips">已添加的成员</p>
         <div class="added-users">
           <member-icons :list="addedUser" :showAdd="false" @remove="remove"></member-icons>
@@ -175,8 +175,27 @@ export default {
 }
 
 .added-users {
-  @include setSize(100%, 36px);
+  @include setSize(100%, 5.21vh);
   text-align: left;
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 4px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px #eee;
+    background-color: #bbb;
+  }
 }
 
 #ensure {

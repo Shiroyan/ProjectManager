@@ -1,6 +1,6 @@
 <template>
   <div id="tag-list__wrapper">
-    <el-tag class="tag" :key="tag.id" v-for="tag in _tags" :closable="showAdd" size="mini" :color="colors[tag.id]" :disable-transitions="false" @close="remove(tag.id)">
+    <el-tag class="tag" :key="tag.id" v-for="tag in _tags" :closable="showAdd" size="mini" :color="colors[tag.id % 11]" :disable-transitions="false" @close="remove(tag.id)">
       {{tag.name}}
     </el-tag>
     <el-popover ref="tagList" placement="right">

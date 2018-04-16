@@ -53,7 +53,8 @@ export default {
 </script>
 <style lang="scss">
 .user__avatar {
-  @include setSize(36px, 36px);
+  height:  36px;
+  min-width: 36px;
   box-sizing: border-box;
   background-color: $default;
   border-radius: 18px;

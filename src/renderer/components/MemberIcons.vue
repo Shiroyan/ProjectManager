@@ -43,6 +43,26 @@ export default {
   text-align: left;
   display: inline-block;
   vertical-align: middle;
+  width: 100%;
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 4px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px #eee;
+    background-color: #bbb;
+  }
 }
 
 .member-icon,

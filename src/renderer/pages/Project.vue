@@ -407,11 +407,30 @@ export default {
 
 .info__item {
   @include flex(flex-start);
-  height: 36px;
-  margin-bottom: 30px;
+  @include setSize(670px, 40px);
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 4px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #f5f5f5;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 20px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px #eee;
+    background-color: #bbb;
+  }
+  margin-bottom: 26px;
 }
 .info__label {
-  width: 70px;
+  min-width: 70px;
   color: $tips;
   vertical-align: middle;
 }
@@ -509,7 +528,8 @@ export default {
   cursor: pointer;
   .avatar {
     font-size: 12px;
-    @include setSize(32px, 32px);
+    min-width: 32px;
+    height: 32px;
     border-radius: 16px;
     margin-right: 10px;
     vertical-align: middle;
