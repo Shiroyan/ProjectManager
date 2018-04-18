@@ -11,7 +11,9 @@
       <user-avatar :username="event.members[0].username" :job="event.members[0].jobId" class="event__avatar"></user-avatar>
     </div>
     <div class="event__footer">
-      <mini-tag :id="event.tags[0].id" :tagName="event.tags[0].name" class="event__tag"></mini-tag>
+      <div>
+        <mini-tag v-if="event.tags.length > 0" :id="event.tags[0].id" :tagName="event.tags[0].name" class="event__tag"></mini-tag>
+      </div>
       <div class="event__time-label" :style="bgColor">{{label}}</div>
     </div>
     <div class="event__mask" v-show="isShowMenu">
@@ -188,6 +190,8 @@ export default {
   word-wrap: break-word;
   word-break: break-all;
   white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .event__avatar {
   height: 28px;

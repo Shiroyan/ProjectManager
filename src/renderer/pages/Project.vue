@@ -10,7 +10,8 @@
           <p id="info__start-end" class="info__item">{{info.startTime}} ~ {{info.endTime}}</p>
           <div class="info__item">
             <div class="info__label">合同</div>
-            <a id="info__contract" :href="`${baseUrl}${info.contract.url}`">附件</a>
+            <span id="info__contract" v-if="info.contract === ''">无</span>
+            <a id="info__contract" :href="`${baseUrl}${info.contract.url}`" v-else>附件</a>
             <div class="info__label">合同金额</div>
             <span id="info__contract-val">{{info.contractVal}}</span>
           </div>
@@ -273,9 +274,6 @@ export default {
     updateProject(form) {
       let data = Object.assign({}, form);
       data.members = data.members.map(u => u.id).join(',');
-      if (!(data.contract instanceof File)) {
-        delete data.contract;
-      }
       this.$api.$projects.update(this.projectId, data, () => {
         this.isEditVisible = false;
         this.getProjectInfo();
@@ -283,7 +281,9 @@ export default {
     },
     getProjectInfo() {
       this.$api.$projects.getProjectInfo(this.projectId, (info) => {
-        info.contract = { name: `${info.name}.doc`, url: info.contract };
+        if (info.contract.length > 0) {
+          info.contract = { name: `${info.name}.doc`, url: info.contract };
+        }
         this.info = info;
       });
     },
@@ -357,12 +357,9 @@ export default {
       next();
     }
   },
-  mounted() {
+  created() {
     this.projectId = this.$route.params.projectId;
-    api.$projects.getProjectInfo(this.projectId, (info) => {
-      info.contract = { name: `${info.name}.doc`, url: info.contract };
-      this.info = info;
-    });
+    this.getProjectInfo();
     this.users.users.length === 0
       && this.$api.$users.getUsersList(users => this.updateUsers(users));
   },

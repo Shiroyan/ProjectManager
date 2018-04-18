@@ -11,10 +11,10 @@
         <el-form-item class="form__item" label="成员" id="members">
           <member-icons :list="projectForm.members" @add="addMember" @remove="removeMember"></member-icons>
         </el-form-item>
-        <el-form-item class="form__item" label="合同" id="contract" prop="contract">
+        <el-form-item class="form__item" label="合同" id="contract">
           <upload v-model="projectForm.contract"></upload>
         </el-form-item>
-        <el-form-item class="form__item" prop="contractVal" label="合同金额">
+        <el-form-item class="form__item"  label="合同金额">
           <sb-input v-model.number="projectForm.contractVal" placeholder="合同金额 0 - 100万"></sb-input>
         </el-form-item>
         <el-form-item class="form__item" label="起止时间" prop="startTime">

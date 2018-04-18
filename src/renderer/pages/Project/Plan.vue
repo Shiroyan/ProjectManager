@@ -51,7 +51,7 @@
           <el-form-item class="form__item" label="计划时间" prop="planTime">
             <el-input-number v-model="eventAddForm.planTime" size="mini" :controls="false"></el-input-number>
           </el-form-item>
-          <el-form-item class="form__item" label="标签" prop="tags">
+          <el-form-item class="form__item" label="标签">
             <tag v-model="eventAddForm.tags"></tag>
           </el-form-item>
         </el-form>
@@ -94,7 +94,7 @@
         <el-form-item class="form__item" label="是否完成">
           <el-checkbox v-model="eventUpdateForm.isFinished"></el-checkbox>
         </el-form-item>
-        <el-form-item class="form__item" label="标签" prop="tags">
+        <el-form-item class="form__item" label="标签">
           <tag v-model="eventUpdateForm.tags" :showAdd="isLeader"></tag>
         </el-form-item>
       </el-form>

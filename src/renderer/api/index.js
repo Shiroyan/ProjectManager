@@ -180,7 +180,7 @@ const projectsApi = {
     url && get(url);
   },
   update(pid, data, successCb) {
-    put(`/projects/${pid}`, successCb, data);
+    post2(`/projects/${pid}`, successCb, data);
   },
   delete(pid, successCb) {
     $delete(`/projects/${pid}`, successCb);
