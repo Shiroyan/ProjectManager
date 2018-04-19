@@ -21,6 +21,7 @@
             <div class="no-event-tips" v-show="events.length === 0">* 若出现没有事件填写的情况，请联系项目负责人为您添加</div>
             <div class="form__item" v-for="e in events" :key="e.id">
               <div class="form__label">{{e.desc}}</div>
+              <span class="title">{{e.projectName}}</span>
               <el-input-number v-model="e.dailyRealTime" :controls="false" @change="genBaseContent"></el-input-number>
             </div>
             <div class="form__item">
@@ -106,10 +107,11 @@ export default {
     getAddEvents(dailyDate) {
       let dailyDateStr = date.format(dailyDate, 'yyyy-MM-dd');
       this.$api.$events.get((events) => {
-        this.events = events.map(({ id, desc }) => { // eslint-disable-line
+        this.events = events.map(({ id, desc, projectName }) => { // eslint-disable-line
           return {
             id,
             desc,
+            projectName,
             dailyRealTime: 0,
           };
         });
@@ -169,10 +171,12 @@ export default {
       this.$api.$users.getProfile((data) => {
         this.updateProfile(data);
         this.curUser = this.profile.userId;
+        this.profile.depId !== 0 && (this.curDepId = this.profile.depId);
         this.getDailies(this.curUser);
       });
     } else {
       this.curUser = this.profile.userId;
+      this.profile.depId !== 0 && (this.curDepId = this.profile.depId);
       this.getDailies(this.curUser);
     }
   },
@@ -257,6 +261,7 @@ export default {
   .form__item {
     @include flex(flex-start);
     margin-bottom: 15px;
+    position: relative;
   }
   .no-event-tips {
     margin-bottom: 15px;
@@ -272,6 +277,28 @@ export default {
     margin-right: 20px;
     font-size: 12px;
     color: $tips;
+  }
+  .title {
+    @include setSize(100px, 20px);
+    @include absBL(12px, -120px);
+    display: none;
+    font-size: 12px;
+    line-height: 20px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 2px;
+    box-sizing: border-box;
+    opacity: 0;
+    text-align: center;
+    z-index: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .form__label:hover + .title {
+    display: block;
+    opacity: 1;
+    transition: opacity 2s ease-in-out;
   }
   .form__btn-group {
     margin: 40px 0 30px 100px;

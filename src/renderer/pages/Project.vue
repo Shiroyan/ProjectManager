@@ -79,8 +79,8 @@
         </div>
         <p class="handle-tips">* 按下Shift + 滑轮 进行左右滑动</p>
       </el-tab-pane>
-      <el-tab-pane label="Q & A" name="bugs" disabled>
-      </el-tab-pane>
+      <!-- <el-tab-pane label="Q & A" name="bugs" disabled>
+      </el-tab-pane> -->
     </el-tabs>
     <project-dialog v-if="isEditVisible" mode="edit" :isVisible.sync="isEditVisible" :info="info" @updateProject="updateProject"></project-dialog>
     <del-project-dialog :isVisible.sync="isDelVisible" :projectName="info.name" @deleteProject="deleteProject"></del-project-dialog>

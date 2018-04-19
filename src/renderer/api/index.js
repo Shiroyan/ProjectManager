@@ -290,6 +290,9 @@ const scheduleApi = {
   updateWorkHourByPM(successCb, data) {
     put('/schedules/workhour', successCb, data);
   },
+  updateWorkHourAll(successCb, data) {
+    put('/schedules/workhour/all', successCb, data);
+  },
 };
 //#endregion
 

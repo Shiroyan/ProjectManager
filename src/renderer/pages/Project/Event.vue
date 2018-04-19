@@ -7,7 +7,9 @@
       <div class="event__checkbox">
         <el-checkbox v-model="isFinished" v-if="isShowCheck" @change="checkChange"></el-checkbox>
       </div>
-      <div class="event__desc" @click="showMask">{{event.desc}}</div>
+      <div class="event__desc" @click="showMask">
+        <span class="event__plan-time">{{event.planTime}}h, </span> {{event.desc}}
+      </div>
       <user-avatar :username="event.members[0].username" :job="event.members[0].jobId" class="event__avatar"></user-avatar>
     </div>
     <div class="event__footer">
@@ -40,7 +42,7 @@ export default {
       type: Object,
       default() {
         return {
-          desc: '原型图绘制',
+          desc: '',
           members: [{ id: 13, jobId: 2, username: '小白' }],
           tags: [{ id: 1, name: 'Web' }],
           isFinished: false,
@@ -192,6 +194,11 @@ export default {
   white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.event__plan-time {
+  text-align: right;
+  color: $default;
+  font-weight: bold;
 }
 .event__avatar {
   height: 28px;

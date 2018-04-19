@@ -79,6 +79,7 @@ export default {
     ...mapState(['profile']),
   },
   methods: {
+    ...mapMutations(['updateProfile']),
     userChange(userId) {
       this.curUser = userId;
       if (this.tab === 'plan') {
@@ -130,8 +131,18 @@ export default {
       this.curDepId = id;
     },
   },
-  mounted() {
+  created() {
     this.getChanges();
+    if (this.profile.username === '') {
+      this.$api.$users.getProfile((data) => {
+        this.updateProfile(data);
+        this.curUser = this.profile.userId;
+        this.profile.depId !== 0 && (this.curDepId = this.profile.depId);
+      });
+    } else {
+      this.curUser = this.profile.userId;
+      this.profile.depId !== 0 && (this.curDepId = this.profile.depId);
+    }
   },
 };
 </script>

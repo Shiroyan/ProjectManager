@@ -28,7 +28,11 @@
             <el-form-item label="工时" prop="avaTime">
               <el-input-number v-model="modWorkHourForm.avaTime" :controls="false"></el-input-number>
             </el-form-item>
-            <el-form-item label="成员" prop="members">
+            <el-form-item label="全员" v-if="profile.isAdmin">
+              <el-switch v-model="isModAll" active-color="#3f51b5" inactive-color="#9e9e9e">
+              </el-switch>
+            </el-form-item>
+            <el-form-item v-show="!isModAll" label="成员">
               <member-icons :list="modWorkHourForm.members" @add="isShowUserList = true" @remove="removeMember"></member-icons>
             </el-form-item>
           </el-form>
@@ -46,7 +50,7 @@
         </div>
         <!-- <el-button id="filter" icon="el-icon-my-filter">筛选</el-button> -->
         <el-button id="workhour" @click="isReportWorkHour = true">汇报工时</el-button>
-        <el-button id="modify" type="warning" v-if="profile.isPM" @click="isModWorkHour = true">修改工时</el-button>
+        <el-button id="modify" v-if="profile.isPM" @click="isModWorkHour = true">修改工时</el-button>
       </div>
       <div id="schedules__body">
         <div class="weekadys" v-for="(day, index) in weekdays" :key="`wd${index}`">{{day}}</div>
@@ -84,6 +88,7 @@ export default {
       month: new Date().getMonth() + 1,
       isReportWorkHour: false,
       isModWorkHour: false,
+      isModAll: false,
       isShowUserList: false,
       startEnd: '',
       workHourForm: {
@@ -173,9 +178,14 @@ export default {
             avaTime: this.modWorkHourForm.avaTime,
             members: this.modWorkHourForm.members.map(u => u.id).join(','),
           };
-          this.$api.$sche.updateWorkHourByPM(() => {
+          let callback = () => {
             this.isModWorkHour = false;
-          }, data);
+          };
+          if (!this.isModAll) {
+            this.$api.$sche.updateWorkHourByPM(callback, data);
+          } else {
+            this.$api.$sche.updateWorkHourAll(callback, data);
+          }
         } else {
           this.$message.error('请检查格式');
         }
@@ -237,7 +247,8 @@ export default {
   color: $black;
 }
 
-#workhour {
+#workhour,
+#modify {
   background-color: $default;
   color: #fff;
 }

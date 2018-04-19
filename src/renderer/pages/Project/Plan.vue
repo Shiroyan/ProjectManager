@@ -43,7 +43,7 @@
             <el-input type="textarea" :rows="3" placeholder="0 - 200个字符" v-model="eventAddForm.desc" resize="none"></el-input>
           </el-form-item>
           <el-form-item class="form__item" label="成员" prop="members">
-            <member-icons :list="eventAddForm.members" @add="isShowUserList = true" @remove="removeMember"></member-icons>
+            <member-icons :list="eventAddForm.members" @add="isAddUsers = true" @remove="removeMember"></member-icons>
           </el-form-item>
           <el-form-item class="form__item" label="起止时间" prop="startEnd">
             <date-time-picker id="time-range" v-model="eventAddForm.startEnd" :pickerOptions="pickerOptions"></date-time-picker>
@@ -60,7 +60,7 @@
         <el-button type="text" id="add__cancel" @click="isAddEvent = false">取消</el-button>
         <el-button type="text" id="add__ensure" @click="ensure('eventAddForm')">创建</el-button>
       </div>
-      <user-list :isVisible.sync="isShowUserList" :list="userList" v-model="eventAddForm.members" :appendToBody="false"></user-list>
+      <user-list :isVisible.sync="isAddUsers" :list="userList" v-model="eventAddForm.members" :appendToBody="false"></user-list>
     </div>
     <el-dialog :visible.sync="isUpdateEvent" center width="37vw" custom-class="edit-event__dialog" top="5vh">
       <el-form :model="eventUpdateForm" ref="eventUpdateForm" :rules="rules" label-position="left" label-width="7.321vw" :disabled="!isLeader">
@@ -68,7 +68,7 @@
           <el-input type="textarea" :rows="3" placeholder="0 - 200个字符" v-model="eventUpdateForm.desc" resize="none"></el-input>
         </el-form-item>
         <el-form-item class="form__item" label="成员" prop="members">
-          <member-icons :list="eventUpdateForm.members" @add="isShowUserList = true" @remove="removeMember2" :showAdd="isLeader" :showRemove="isLeader"></member-icons>
+          <member-icons :list="eventUpdateForm.members" @add="isUpdateUsers = true" @remove="removeMember2" :showAdd="isLeader" :showRemove="isLeader"></member-icons>
         </el-form-item>
         <el-form-item class="form__item" label="起止时间">
           <div id="time-range">
@@ -104,7 +104,7 @@
           <el-button type="info" id="edit__ensure" @click="ensure('eventUpdateForm')">确定</el-button>
         </div>
       </div>
-      <user-list :isVisible.sync="isShowUserList" :list="userList" v-model="eventUpdateForm.members"></user-list>
+      <user-list :isVisible.sync="isUpdateUsers" :list="userList" v-model="eventUpdateForm.members"></user-list>
     </el-dialog>
 
   </div>
@@ -160,7 +160,8 @@ export default {
       isDelPlan: false,
       isAddEvent: false,
       isUpdateEvent: false,
-      isShowUserList: false,
+      isAddUsers: false,
+      isUpdateUsers: false,
       planUpdateForm: {
         planName: this.plan.name,
         process: this.plan.process,

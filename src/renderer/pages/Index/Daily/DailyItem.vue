@@ -11,7 +11,10 @@
         </div>
         <div class="no-event-tips" v-show="events.length === 0">* 若出现没有事件填写的情况, 则之前汇报的事件已被删除</div>
         <div class="form__item" v-for="e in events" :key="e.id">
-          <div class="form__label">{{e.desc}}</div>
+          <div class="form__label">
+            {{e.desc}}
+          </div>
+          <span class="title">{{e.projectName}}</span>
           <el-input-number v-model="e.dailyRealTime" :controls="false" @change="genBaseContent"></el-input-number>
         </div>
         <div class="form__item">
@@ -133,8 +136,9 @@ export default {
 .daily-item__delete {
   color: $danger;
   right: 0;
-  &:hover, &:focus {
-    opacity: .7;
+  &:hover,
+  &:focus {
+    opacity: 0.7;
     color: $danger;
   }
 }
@@ -148,6 +152,7 @@ export default {
 .daily-item--edit {
   .form__item {
     @include flex(flex-start);
+    position: relative;
     margin-bottom: 15px;
     &:first-child {
       margin-bottom: 25px;
@@ -167,6 +172,28 @@ export default {
     margin-right: 20px;
     font-size: 12px;
     color: $tips;
+  }
+  .title {
+    @include setSize(100px, 20px);
+    @include absBL(12px, -120px);
+    display: none;
+    font-size: 12px;
+    line-height: 20px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 2px;
+    box-sizing: border-box;
+    opacity: 0;
+    text-align: center;
+    z-index: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .form__label:hover + .title {
+    display: block;
+    opacity: 1;
+    transition: opacity 2s ease-in-out;
   }
   .form__btn-group {
     margin: 20px 0 30px 80px;
