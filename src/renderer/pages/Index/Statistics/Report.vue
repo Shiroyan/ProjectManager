@@ -219,9 +219,9 @@ export default {
       visualMap: {
         show: false,
         min: -10,
-        max: 40,
+        max: 50,
         inRange: {
-          colorLightness: [0, 1],
+          colorLightness: [0, 0.8],
         },
       },
       series: [
@@ -296,6 +296,13 @@ export default {
             smooth: 0.2,
             length: 20,
             length2: 20,
+          },
+        },
+        itemStyle: {
+          normal: {
+            color: '#3f51b5',
+            shadowBlur: 200,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
           },
         },
       });
