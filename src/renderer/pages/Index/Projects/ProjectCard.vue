@@ -59,6 +59,10 @@ export default {
 }
 
 .project__name {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 14px;
   float: left;
   vertical-align: middle;

@@ -21,7 +21,10 @@
             <div class="no-event-tips" v-show="events.length === 0">* 若出现没有事件填写的情况，请联系项目负责人为您添加</div>
             <div class="form__item" v-for="e in events" :key="e.id">
               <div class="form__label">{{e.desc}}</div>
-              <span class="title">{{e.projectName}}</span>
+              <span class="title">
+                {{e.projectName}}
+                <p>{{e.desc}}</p>
+              </span>
               <el-input-number v-model="e.dailyRealTime" :controls="false" @change="genBaseContent"></el-input-number>
             </div>
             <div class="form__item">
@@ -279,11 +282,12 @@ export default {
     color: $tips;
   }
   .title {
-    @include setSize(100px, 20px);
-    @include absBL(12px, -120px);
+    @include setSize(auto, auto);
+    position: fixed;
+    padding: 8px;
     display: none;
     font-size: 12px;
-    line-height: 20px;
+    line-height: 1.5;
     color: #fff;
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 2px;
@@ -292,8 +296,10 @@ export default {
     text-align: center;
     z-index: 2;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    transform: translateX(-110%);
+    p {
+      white-space: pre;
+    }
   }
   .form__label:hover + .title {
     display: block;

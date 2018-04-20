@@ -13,7 +13,7 @@
 export default {
   props: {
     value: {
-      type: Object,
+      type: [Object, File],
       required: true,
     },
   },

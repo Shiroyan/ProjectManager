@@ -10,7 +10,7 @@
           <p id="info__start-end" class="info__item">{{info.startTime}} ~ {{info.endTime}}</p>
           <div class="info__item">
             <div class="info__label">合同</div>
-            <span id="info__contract" v-if="info.contract === ''">无</span>
+            <span id="info__contract" v-if="info.contract.url === ''">无</span>
             <a id="info__contract" :href="`${baseUrl}${info.contract.url}`" v-else>附件</a>
             <div class="info__label">合同金额</div>
             <span id="info__contract-val">{{info.contractVal}}</span>
@@ -116,7 +116,7 @@ export default {
         name: '',
         startTime: '',
         endTime: '',
-        contract: '',
+        contract: {},
         contractVal: '',
         firstParty: '',
         leaders: [],
@@ -283,6 +283,8 @@ export default {
       this.$api.$projects.getProjectInfo(this.projectId, (info) => {
         if (info.contract.length > 0) {
           info.contract = { name: `${info.name}.doc`, url: info.contract };
+        } else {
+          info.contract = { name: '', url: '' };
         }
         this.info = info;
       });

@@ -1,9 +1,9 @@
 {
-  "name": "project-manager",
-  "version": "0.0.41",
-  "author": "Yanjiaxin <yjx@szltech.com>",
-  "description": "project-manager",
-  "license": null,
+  "name": "DLManager",
+  "version": "0.5.3",
+  "author": "Yanjiaxin <shiroyan@qq.com>",
+  "description": "DLManager",
+  "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder -o -w -p always",
@@ -23,7 +23,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "project-manager",
+    "productName": "DLManager",
     "appId": "org.szl.projectmanager",
     "directories": {
       "output": "build"

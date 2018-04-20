@@ -3,7 +3,7 @@
     <el-form :model="projectForm" ref="projectForm" :rules="rules" :status-icon="false" label-position="left" label-width="6.2vw" class="project-form" :inline-message="false">
       <div class="input-group">
         <el-form-item class="form__item" prop="name" label="项目名称">
-          <sb-input v-model="projectForm.name" placeholder="项目名称 3 - 12个字符"></sb-input>
+          <sb-input v-model="projectForm.name" placeholder="项目名称 3 - 25个字符"></sb-input>
         </el-form-item>
         <el-form-item class="form__item" prop="firstParty" label="甲方">
           <sb-input v-model="projectForm.firstParty" placeholder="甲方 2 - 20个字符" :maxlength="20"></sb-input>
@@ -14,7 +14,7 @@
         <el-form-item class="form__item" label="合同" id="contract">
           <upload v-model="projectForm.contract"></upload>
         </el-form-item>
-        <el-form-item class="form__item"  label="合同金额">
+        <el-form-item class="form__item" label="合同金额">
           <sb-input v-model.number="projectForm.contractVal" placeholder="合同金额 0 - 100万"></sb-input>
         </el-form-item>
         <el-form-item class="form__item" label="起止时间" prop="startTime">
@@ -26,7 +26,7 @@
           </el-form-item>
           <el-form-item class="form__item" label="项目阶段">
             <el-select v-model="projectForm.stageId" placeholder="请选择阶段">
-              <el-option v-for="item in stages.stages" :key="item.id" :label="item.name" :value="item.id">
+              <el-option v-for="item in projectStages" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -87,6 +87,7 @@ export default {
   data() {
     return {
       innerVisible: false,
+      projectStages: [],
       projectForm: JSON.parse(JSON.stringify(this.info)),
     };
   },
@@ -135,8 +136,14 @@ export default {
   created() {
     this.users.users.length === 0
       && this.$api.$users.getUsersList(users => this.updateUsers(users));
-    this.stages.stages.length === 0
-      && this.$api.$projects.getStages(stages => this.updateStages(stages));
+    if (this.stages.stages.length === 0) {
+      this.$api.$projects.getStages((stages) => {
+        this.projectStages = stages;
+        this.updateStages(stages);
+      });
+    } else {
+      this.projectStages = this.stages.stages;
+    }
   },
 };
 </script>
@@ -189,7 +196,7 @@ export default {
   }
 }
 .project-dialog {
-  max-height: 90.23vh
+  max-height: 90.23vh;
 }
 </style>
 
