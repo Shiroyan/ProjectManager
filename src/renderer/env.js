@@ -1,7 +1,7 @@
 const WEB = 'web';
 const CLIENT = 'client';
 const DEV = 'dev';
-const NOW = DEV;
+const NOW = CLIENT;
 
 export default {
   WEB,
