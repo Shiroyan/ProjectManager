@@ -88,7 +88,6 @@ export default {
             this.$emit('updateProfile', this.id, this.profileForm)
             :
             this.$emit('updateProfile', this.profileForm);
-          this._isVisible = false;
         } else {
           this.$message({
             type: 'error',
@@ -102,7 +101,7 @@ export default {
     },
     ...mapMutations(['updateOptions']),
   },
-  mounted() {
+  created() {
     this.options.citys.length === 0 &&
       this.$api.$users.options((data) => {
         this.updateOptions(data);

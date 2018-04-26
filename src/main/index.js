@@ -85,7 +85,7 @@ autoUpdater.on('update-not-available', (info) => {
 });
 
 autoUpdater.on('error', (err) => {
-  sendStatusToWindow(`在自动更新中发生了错误. !!!∑(ﾟДﾟノ)ノ' 
+  sendStatusToWindow(`在自动更新中发生了错误. !!!∑(ﾟДﾟノ)ノ'
   ${err}`);
   mainWindow.webContents.send('UPDATE_ERROR', err);
 });

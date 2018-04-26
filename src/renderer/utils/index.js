@@ -14,33 +14,32 @@ function hasChinese(str) {
 }
 
 /**
- * 获取cookie的方法为异步方法，故返回Promise以进行进一步操作
+ * 获取cookie
  * @param {string} key cookie的key
  */
 function getCookie(key) {
-  if (env.NOW === env.WEB) {
-    return (new Promise((resolve, reject) => {
-      let cookies = document.cookie.replace(/\s*/g, '').split(';');
-      let o = {};
-      cookies.length !== 0 && cookies.forEach((cookie) => {
-        let temp = cookie.split('=');
-        let key = temp[0];
-        let val = temp[1];
-        o[key] = val;
-      });
-      o[key] ?
-        resolve(o[key]) : reject('token not found');
-    }));
+/*   if (env.NOW === env.WEB) {
   }
   let cookies = Vue.prototype.$electron.remote.session.defaultSession.cookies;
   return (new Promise((resolve, reject) => {
     let cookie;
     cookies && cookies.get({ name: key }, (error, cookies) => {
+      console.log(cookies);
       cookie = cookies[0];
       cookie && cookie.value ?
         resolve(cookie.value) : reject('token not found');
     });
   }));
+*/
+  let cookies = document.cookie.replace(/\s*/g, '').split(';');
+  let o = {};
+  cookies.length !== 0 && cookies.forEach((cookie) => {
+    let temp = cookie.split('=');
+    let key = temp[0];
+    let val = temp[1];
+    o[key] = val;
+  });
+  return o[key];
 }
 
 const date = {

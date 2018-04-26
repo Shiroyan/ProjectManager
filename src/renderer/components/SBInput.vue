@@ -1,6 +1,6 @@
 <template>
   <div class="input--sb__container">
-    <input type="text" :placeholder="placeholder" class="input--sb__content" v-model="val" @input="input" :maxlength="maxlength">
+    <input type="text" :placeholder="placeholder" class="input--sb__content" v-model="val" @input="input">
   </div>
 </template>
 

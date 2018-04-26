@@ -26,6 +26,10 @@
           <i class="el-icon-my-options"></i>
           <span slot="title">选项设置</span>
         </el-menu-item>
+        <el-menu-item index="/evaluation" class="nav__item" title="月度评价" v-if="profile.isAdmin">
+          <i class="el-icon-my-evaluation"></i>
+          <span slot="title">月度评价</span>
+        </el-menu-item>
       </el-menu>
     </div>
     <div id="right">
@@ -60,8 +64,13 @@
       <transition mode="out-in" name="el-fade-in" :duration="250">
         <router-view id="content__wrapper"></router-view>
       </transition>
+      <transition mode="out-in" name="el-fade-in" :duration="250">
+        <keep-alive>
+          <router-view id="content__wrapper" name="alive"></router-view>
+        </keep-alive>
+      </transition>
     </div>
-    <profile-dialog :isVisible.sync="isVisible" :form="selfProfile" @updateProfile="updateSelfProfile"></profile-dialog>
+    <profile-dialog :isVisible.sync="isVisible" v-if="isVisible" :form="selfProfile" @updateProfile="updateSelfProfile"></profile-dialog>
   </div>
 </template>
 
@@ -111,7 +120,10 @@ export default {
     },
     updateSelfProfile(profileForm) {
       this.$api.$users.updateProfile(profileForm, () => {
-        this.$api.$users.getProfile((data) => { this.updateProfile(data); });
+        this.$api.$users.getProfile((data) => {
+          this.isVisible = false;
+          this.updateProfile(data);
+        });
       });
     },
     ...mapMutations(['updateProfile']),

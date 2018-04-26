@@ -79,11 +79,11 @@
           <el-input-number v-model="eventUpdateForm.planTime" size="mini" :controls="false"></el-input-number>
         </el-form-item>
         <el-form-item class="form__item form__item--inline" label="实际时间" prop="realTime">
-          <el-input-number v-model="eventUpdateForm.realTime" size="mini" :controls="false"></el-input-number>
+          <el-input-number v-model="eventUpdateForm.realTime" size="mini" :controls="false" @change="computeRatio"></el-input-number>
         </el-form-item>
         <br />
         <el-form-item class="form__item form__item--inline" label="核准时间" prop="approval">
-          <el-input-number v-model="eventUpdateForm.approval" size="mini" :controls="false"></el-input-number>
+          <el-input-number v-model="eventUpdateForm.approval" size="mini" :controls="false" @change="computeRatio"></el-input-number>
         </el-form-item>
         <el-form-item class="form__item form__item--inline" label="系数(核准/实际)" prop="ratio">
           <el-input-number v-model="eventUpdateForm.ratio" size="mini" :controls="false"></el-input-number>
@@ -206,6 +206,14 @@ export default {
     },
   },
   methods: {
+    computeRatio() {
+      let form = this.eventUpdateForm;
+      if (form.approval && form.realTime && form.realTime !== 0) {
+        form.ratio = +(form.approval / form.realTime).toFixed(2);
+      } else {
+        form.ratio = 0;
+      }
+    },
     updatePlan() {
       this.$refs.planUpdateForm.validate((valid) => {
         if (valid) {

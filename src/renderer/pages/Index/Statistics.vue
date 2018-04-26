@@ -6,14 +6,14 @@
       </div>
       <div id="main__wrapper">
         <el-tabs v-model="tab" @tab-click="handleTabClick">
-          <el-tab-pane label="概要" name="summary">
-            <week-summary :sysChanges="sysChanges" @findHistory="getChanges" @genReport="genReport" @genMonthReport="genMonthReport"></week-summary>
-          </el-tab-pane>
           <el-tab-pane label="计划" name="plan">
             <report :report="planReport" @findHistoryReport="findHistoryReport"></report>
           </el-tab-pane>
           <el-tab-pane label="实际" name="real">
             <report :report="realReport" @findHistoryReport="findHistoryReport" type="real"></report>
+          </el-tab-pane>
+          <el-tab-pane label="动态" name="summary">
+            <week-summary :sysChanges="sysChanges" @findHistory="getChanges" @genReport="genReport" @genMonthReport="genMonthReport"></week-summary>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -39,7 +39,9 @@ export default {
     return {
       curDepId: 1,
       curUser: -1,
-      tab: 'summary',
+      tab: 'plan',
+      startTime: '',
+      endTime: '',
       sysChanges: {
         startTime: '',
         endTime: '',
@@ -83,18 +85,21 @@ export default {
     userChange(userId) {
       this.curUser = userId;
       if (this.tab === 'plan') {
-        this.getPlan(this.curUser);
+        this.getPlan(this.curUser, this.startTime, this.endTime);
       }
       if (this.tab === 'real') {
-        this.getReal(this.curUser);
+        this.getReal(this.curUser, this.startTime, this.endTime);
       }
     },
     handleTabClick(tab, event) {
       let { name } = tab;
-      if (name === 'plan') {
-        this.getPlan(this.curUser);
-      } else if (name === 'real') {
-        this.getReal(this.curUser);
+      switch (name) {
+        case 'plan':
+          this.getPlan(this.curUser); break;
+        case 'real':
+          this.getReal(this.curUser); break;
+        default:
+          this.getChanges();
       }
     },
     getChanges(startTime, endTime) {
@@ -121,6 +126,8 @@ export default {
       }, startTime, endTime);
     },
     findHistoryReport(startTime, endTime, type) {
+      this.startTime = startTime;
+      this.endTime = endTime;
       if (type === 'plan') {
         this.getPlan(this.curUser, startTime, endTime);
       } else {
@@ -132,16 +139,17 @@ export default {
     },
   },
   created() {
-    this.getChanges();
     if (this.profile.username === '') {
       this.$api.$users.getProfile((data) => {
         this.updateProfile(data);
         this.curUser = this.profile.userId;
+        this.getPlan(this.curUser);
         this.profile.depId !== 0 && (this.curDepId = this.profile.depId);
       });
     } else {
       this.curUser = this.profile.userId;
       this.profile.depId !== 0 && (this.curDepId = this.profile.depId);
+      this.getPlan(this.curUser);
     }
   },
 };

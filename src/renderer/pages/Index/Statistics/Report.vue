@@ -28,7 +28,7 @@
           <span class="report__val">{{report.planTime}}h</span>
         </div>
         <div class="report__item--inline">
-          <div class="report__label" title="> 0,忙 < 0,闲">空闲预警</div>
+          <div class="report__label" title="> 0,忙 < 0,闲">闲忙预警</div>
           <span class="report__val" :style="busyTimeColor">{{report.busyTime}}h</span>
         </div>
       </template>
@@ -42,11 +42,11 @@
             <span class="report__val">{{report.approval}}h</span>
           </div>
           <div class="report__item--inline">
-            <div class="report__label" title="> 0,忙 < 0,闲">空闲预警</div>
+            <div class="report__label" title="> 0,忙 < 0,闲">闲忙预警</div>
             <span class="report__val" :style="busyTimeColor">{{report.busyTime}}h</span>
           </div>
           <div class="report__item--inline">
-            <div class="report__label">忙闲/优差持续</div>
+            <div class="report__label" title="忙+ 闲- / 差+ 优-">忙闲/优差持续</div>
             <span class="report__val">{{report.busyCnt}}</span> /
             <span class="report__val">{{report.badCnt}}</span>
           </div>

@@ -5,7 +5,7 @@
         <user-avatar class="user__avatar" :username="u.username" :job="u.jobId"></user-avatar>
         <div class="user__username">{{u.username}}</div>
         <div class="user__account" v-if="profile.isAdmin">
-            {{u.account}}
+          {{u.account}}
         </div>
         <div class="user__dep">{{u.depName}}</div>
         <div class="user__job">{{u.jobName}}</div>
@@ -15,7 +15,7 @@
         <el-button type="text" icon="el-icon-delete" class="del-user" v-if="profile.isAdmin && profile.userId !== u.id" @click="showDelUser(u.id)"></el-button>
       </div>
     </div>
-    <profile-dialog :id="selectedUserId" :form="selectedUserProfile" :isVisible.sync="isEditUser" @updateProfile="updateProfileByAdmin"></profile-dialog>
+    <profile-dialog :id="selectedUserId" :form="selectedUserProfile" :isVisible.sync="isEditUser" v-if="isEditUser" @updateProfile="updateProfileByAdmin"></profile-dialog>
     <el-dialog :visible.sync="isDelUser" center width="29vw" custom-class="del-user-dialog">
       <div id="del-user-dialog__content">
         <div id="danger__tips">
@@ -80,6 +80,7 @@ export default {
     },
     updateProfileByAdmin(id, profileForm) {
       this.$api.$users.updateProfileByAdmin(id, profileForm, () => {
+        this.isEditUser = false;
         this.getUsersList();
       });
     },
@@ -100,7 +101,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .users__wrapper {
   @include setSize(40%, 100%);
 }

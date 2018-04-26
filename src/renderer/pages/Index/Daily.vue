@@ -18,14 +18,14 @@
               <el-date-picker v-model="dailyDate" :picker-options="onlyThisWeek" @change="dateChange" type="date" align="center" placeholder="选择日期">
               </el-date-picker>
             </div>
-            <div class="no-event-tips" v-show="events.length === 0">* 若出现没有事件填写的情况，请联系项目负责人为您添加</div>
+            <div class="no-event-tips" v-show="events.length === 0">* 若看到这句话或找不看到可以填写的计划事项，请联系项目或部门负责人为您添加</div>
             <div class="form__item" v-for="e in events" :key="e.id">
               <div class="form__label">{{e.desc}}</div>
+              <input type="number" v-model.number="e.dailyRealTime" class="form__input" />
               <span class="title">
                 {{e.projectName}}
                 <p>{{e.desc}}</p>
               </span>
-              <el-input-number v-model="e.dailyRealTime" :controls="false" @change="genBaseContent"></el-input-number>
             </div>
             <div class="form__item">
               <div class="form__label">内容</div>
@@ -33,12 +33,12 @@
             </div>
             <div class="form__btn-group">
               <el-button id="cancel" @click="isAddDaily=false" size="small">取消</el-button>
-              <el-button id="submit" @click="addDaily" type="primary" size="small" :disabled="events.length === 0">提交</el-button>
+              <el-button id="submit" @click="addOrUpdateDaily($data, 'add')" type="primary" size="small" :disabled="events.length === 0">提交</el-button>
             </div>
           </div>
         </transition>
         <div class="no-daily-tips" v-show="dailies.length === 0 && !isAddDaily">暂无日报</div>
-        <daily-item v-for="d in dailies" :key="d.id" :daily="d" :isMenuVisible="isMenuVisible" @update="updateDaily" @delete="deleteDaily"></daily-item>
+        <daily-item v-for="d in dailies" :key="d.id" :daily="d" :isMenuVisible="isMenuVisible" @update="addOrUpdateDaily" @delete="deleteDaily"></daily-item>
       </div>
     </div>
   </div>
@@ -91,8 +91,14 @@ export default {
   methods: {
     ...mapMutations(['updateProfile']),
     genBaseContent() {
-      let content = this.events.map(({ desc, dailyRealTime }) => `${desc} —— ${dailyRealTime}h`);
-      this.dailyContent = content.join('\n');
+      let content = this.events.map(({ desc, dailyRealTime }) => {
+        if (!dailyRealTime) {
+          dailyRealTime = 0;
+          return '';
+        }
+        return `${desc} —— ${dailyRealTime}h`;
+      });
+      this.dailyContent = content.filter(c => c !== '').join('\n');
     },
     userChange(userId) {
       this.curUser = userId;
@@ -130,33 +136,35 @@ export default {
       this.getAddEvents(this.dailyDate);
       this.isAddDaily = true;
     },
-    addDaily() {
-      let dailyDateStr = date.format(this.dailyDate, 'yyyy-MM-dd');
+    addOrUpdateDaily(data, mode) {
+      let dailyDateStr = date.format(data.dailyDate, 'yyyy-MM-dd');
       let detail = {};
-      this.events.forEach(({ id, dailyRealTime }) => {
+      let isLegal = true;
+      for (let { id, dailyRealTime } of data.events) {
         detail[id] = dailyRealTime;
-      });
-      this.$api.$daily.add({
-        date: dailyDateStr,
-        detail: JSON.stringify(detail),
-        content: this.dailyContent,
-      }, () => {
-        this.isAddDaily = false;
-        this.getDailies(this.curUser);
-      });
-    },
-    updateDaily(data) {
-      let dailyDateStr = date.format(data.date, 'yyyy-MM-dd');
-      let detail = {};
-      data.events.forEach(({ id, dailyRealTime }) => {
-        detail[id] = dailyRealTime;
-      });
-      this.$api.$daily.update({
-        dailyId: data.dailyId,
-        date: dailyDateStr,
-        detail: JSON.stringify(detail),
-        content: data.content,
-      }, () => this.getDailies(this.curUser, this.dailyMonth));
+        if (dailyRealTime === undefined || dailyRealTime === '') {
+          isLegal = false;
+          break;
+        }
+      }
+      if (isLegal) {
+        let temp = {
+          date: dailyDateStr,
+          detail: JSON.stringify(detail),
+          content: data.dailyContent,
+        };
+        if (mode === 'add') {
+          this.$api.$daily.add(temp, () => {
+            this.isAddDaily = false;
+            this.getDailies(this.curUser);
+          });
+        } else {
+          temp.dailyId = data.dailyId;
+          this.$api.$daily.update(temp, () => this.getDailies(this.curUser, this.dailyMonth));
+        }
+      } else {
+        this.$message.error('请填写实际工时，若没有做这件事，填0即可');
+      }
     },
     deleteDaily(dailyId, dailyDate) {
       let dailyDateStr = date.format(dailyDate, 'yyyy-MM-dd');
@@ -281,9 +289,33 @@ export default {
     font-size: 12px;
     color: $tips;
   }
+  .form__input {
+    @include setSize(100%, 40px);
+    box-sizing: border-box;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    color: $black;
+    font-size: 14px;
+    line-height: 40px;
+    outline: none;
+    text-align: center;
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-butto {
+      -webkit-appearance: none;
+    }
+    &:focus {
+      border-color: $primary;
+    }
+    &:focus + .title {
+      display: block;
+      opacity: 1;
+      transition: opacity 2s ease-in-out;
+    }
+  }
   .title {
-    @include setSize(auto, auto);
-    position: fixed;
+    @include absBR(0, 0);
+    max-width: 400px;
+    height: auto;
     padding: 8px;
     display: none;
     font-size: 12px;
@@ -296,15 +328,10 @@ export default {
     text-align: center;
     z-index: 2;
     overflow: hidden;
-    transform: translateX(-110%);
+    transform: translate(105%, 25%);
     p {
-      white-space: pre;
+      white-space: pre-line;
     }
-  }
-  .form__label:hover + .title {
-    display: block;
-    opacity: 1;
-    transition: opacity 2s ease-in-out;
   }
   .form__btn-group {
     margin: 40px 0 30px 100px;
@@ -332,7 +359,6 @@ export default {
 
 <style lang="scss">
 #add-daily__form {
-  .el-input-number,
   .el-input,
   .el-input__inner {
     width: 100%;

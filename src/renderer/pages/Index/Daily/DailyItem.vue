@@ -14,11 +14,11 @@
           <div class="form__label">
             {{e.desc}}
           </div>
+          <input type="number" v-model.number="e.dailyRealTime" class="form__input" />
           <span class="title">
             {{e.projectName}}
             <p>{{e.desc}}</p>
           </span>
-          <el-input-number v-model="e.dailyRealTime" :controls="false" @change="genBaseContent"></el-input-number>
         </div>
         <div class="form__item">
           <div class="form__label">内容</div>
@@ -78,8 +78,14 @@ export default {
   },
   methods: {
     genBaseContent() {
-      let content = this.events.map(({ desc, dailyRealTime }) => `${desc} —— ${dailyRealTime}h`);
-      this.dailyContent = content.join('\n');
+      let content = this.events.map(({ desc, dailyRealTime }) => {
+        if (!dailyRealTime) {
+          dailyRealTime = 0;
+          return '';
+        }
+        return `${desc} —— ${dailyRealTime}h`;
+      });
+      this.dailyContent = content.filter(c => c !== '').join('\n');
     },
     editMode() {
       let dailyDate = date.format(new Date(this.daily.date), 'yyyy-MM-dd');
@@ -93,10 +99,10 @@ export default {
       this.mode = this.READ;
       this.$emit('update', {
         dailyId: this.daily.id,
-        date: new Date(this.daily.date),
+        dailyDate: new Date(this.daily.date),
         events: this.events,
-        content: this.dailyContent,
-      });
+        dailyContent: this.dailyContent,
+      }, 'update');
     },
     deleteDaily() {
       this.$emit('delete', this.daily.id, new Date(this.daily.date));
@@ -176,9 +182,33 @@ export default {
     font-size: 12px;
     color: $tips;
   }
+  .form__input {
+    @include setSize(100%, 40px);
+    box-sizing: border-box;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    color: $black;
+    font-size: 14px;
+    line-height: 40px;
+    outline: none;
+    text-align: center;
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-butto {
+      -webkit-appearance: none;
+    }
+    &:focus {
+      border-color: $primary;
+    }
+    &:focus + .title {
+      display: block;
+      opacity: 1;
+      transition: opacity 2s ease-in-out;
+    }
+  }
   .title {
-    @include setSize(auto, auto);
-    position: fixed;
+    @include absBR(0, 0);
+    max-width: 400px;
+    height: auto;
     padding: 8px;
     display: none;
     font-size: 12px;
@@ -191,15 +221,10 @@ export default {
     text-align: center;
     z-index: 2;
     overflow: hidden;
-    transform: translateX(-110%);
+    transform: translate(105%, 25%);
     p {
-      white-space: pre;
+      white-space: pre-line;
     }
-  }
-  .form__label:hover + .title {
-    display: block;
-    opacity: 1;
-    transition: opacity 2s ease-in-out;
   }
   .form__btn-group {
     margin: 20px 0 30px 80px;
@@ -238,7 +263,6 @@ export default {
   }
 }
 .daily-item--edit {
-  .el-input-number,
   .el-input,
   .el-input__inner {
     width: 100%;

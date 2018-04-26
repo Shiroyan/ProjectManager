@@ -1,13 +1,17 @@
 import axios from 'axios';
 import { Loading, Notification } from 'element-ui';
 import router from '../router';
-import baseUrl from './config';
+import baseUrl from './config'; // eslint-disable-line
+import { backupUrl } from './config'; // eslint-disable-line
 
 const loading = Loading.service;
 const notify = Notification;
 
 
 axios.defaults.baseURL = baseUrl;
+axios.defaults.timeout = 5000;
+axios.defaults.retry = 4;
+axios.defaults.retryDelay = 1000;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 function errorHandler(err) { }
@@ -106,6 +110,39 @@ axios.interceptors.response.use((res) => {
   });
   return res.data;
 }, (error) => {
+  //#region 处理超时，启动备用接口
+  if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
+    let config = error.config;
+    // If config does not exist or the retry option is not set, reject
+    if (!config || !config.retry) return Promise.reject(error);
+
+    // Set the variable for keeping track of the retry count
+    config.__retryCount = config.__retryCount || 0;
+
+    // Check if we've maxed out the total number of retries
+    if (config.__retryCount >= config.retry) {
+      // Reject with the error
+      return Promise.reject(error);
+    }
+
+    // Increase the retry count
+    config.__retryCount += 1;
+
+    // Create new promise to handle exponential backoff
+    let backoff = new Promise(function (resolve) {
+      setTimeout(function () {
+        resolve();
+      }, config.retryDelay || 1);
+    });
+
+    // Return the promise in which recalls axios to retry the request
+    return backoff.then(function () {
+      config.baseURL = backupUrl;
+      config.url = config.url.replace(baseUrl, backupUrl);
+      return axios(config);
+    });
+  }
+  //#endregion
   let response = error ? error.response : { data: { error: '网络错误' }, status: 0 };
   loadingInstance.close();
   let { data, status } = response;
@@ -331,6 +368,29 @@ const dailyApi = {
   },
 };
 //#endregion
+
+//#region 评价接口
+const evaluation = {
+  getProjcets(date, successCb) {
+    get(`/evaluation/projects?date=${date}`, successCb);
+  },
+  add(data, successCb) {
+    post('/evaluation', successCb, data);
+  },
+  update(data, successCb) {
+    put('/evaluation', successCb, data);
+  },
+  delete(data, successCb) {
+    $delete('/evaluation', successCb, data);
+  },
+  getAll(year, successCb) {
+    get(`/evaluation/${year}`, successCb);
+  },
+  table(month, successCb) {
+    get(`/evaluation/table/${month}`, successCb);
+  },
+};
+
 export default {
   $users: usersApi,
   $projects: projectsApi,
@@ -340,6 +400,7 @@ export default {
   $sche: scheduleApi,
   $options: optionsApi,
   $daily: dailyApi,
+  $evaluation: evaluation,
 };
 
 export {

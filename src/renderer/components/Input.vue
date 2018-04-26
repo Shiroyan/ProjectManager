@@ -29,7 +29,7 @@ export default {
     },
     maxlength: {
       type: Number,
-      default: 12,
+      default: 25,
     },
     value: [String, Number],
   },

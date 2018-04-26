@@ -72,16 +72,17 @@ export default {
    * 在进入登录页面之前，检验是否存在token，若存在则进行自动登录
    */
   beforeRouteEnter(to, from, next) {
-    getCookie('token')
-      .then((token) => {
-        next((vm) => {
-          vm.$api.$users.autoLogin((data) => {
-            vm.updateProfile(data);
-            vm.$router.push('/');
-          });
+    let token = getCookie('token');
+    if (token) {
+      next((vm) => {
+        vm.$api.$users.autoLogin((data) => {
+          vm.updateProfile(data);
+          vm.$router.push('/');
         });
-      })
-      .catch(error => next());
+      });
+    } else {
+      next();
+    }
   },
 };
 </script>

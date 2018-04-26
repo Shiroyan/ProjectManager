@@ -1,8 +1,7 @@
 import env from '@/env';
 
 let baseUrl = ''; // eslint-disable-line
-
-//http://119.29.163.209
+const backupUrl = 'http://172.16.11.200:3000';
 
 switch (env.NOW) {
   case env.WEB:
@@ -15,3 +14,7 @@ switch (env.NOW) {
 }
 
 export default baseUrl;
+
+export {
+  backupUrl,
+};

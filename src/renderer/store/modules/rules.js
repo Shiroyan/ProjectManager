@@ -59,7 +59,7 @@ const rules = {
   ],
   name: [// 项目名
     { required: true, message: '请输入项目名称', trigger: 'change' },
-    { min: 3, max: 12, message: '长度3 - 25个字符', trigger: 'change' },
+    { min: 3, max: 25, message: '长度3 - 25个字符', trigger: 'change' },
   ],
   firstParty: [// 甲方
     { required: true, message: '请输入甲方名称', trigger: 'blur' },
