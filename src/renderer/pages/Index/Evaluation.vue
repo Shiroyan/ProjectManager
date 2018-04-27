@@ -104,9 +104,8 @@ export default {
       this.getProjects();
     },
     tabChange(now, origin) {
-      if (now === 1) {
-        let temp = new Date(this.year.getFullYear(), this.month.getMonth());
-        this.getTable(temp);
+      if (now === 1 && this.tableData.length === 0) {
+        this.getTable(this.tableDate);
       }
     },
     showAddEval() {
