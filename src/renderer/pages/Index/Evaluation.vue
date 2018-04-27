@@ -104,8 +104,9 @@ export default {
       this.getProjects();
     },
     tabChange(now, origin) {
+      let temp = new Date(this.tableDate.getFullYear(), this.tableDate.getMonth());
       if (now === 1 && this.tableData.length === 0) {
-        this.getTable(this.tableDate);
+        this.getTable(temp);
       }
     },
     showAddEval() {
