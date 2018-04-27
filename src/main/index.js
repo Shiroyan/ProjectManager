@@ -82,6 +82,12 @@ const template = [
           });
         },
       },
+      {
+        label: '检查更新',
+        click() {
+          autoUpdater.checkForUpdates();
+        },
+      },
     ],
   },
 ];
