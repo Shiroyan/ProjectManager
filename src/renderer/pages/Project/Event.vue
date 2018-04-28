@@ -242,20 +242,5 @@ export default {
 .el-checkbox {
   z-index: 0;
 }
-// .el-checkbox__inner::after {
-//   border: 2px solid $black;
-//   border-top-color: transparent;
-//   border-left-color: transparent;
-//   @include setSize(7px, 20px);
-//   left: 9px;
-//   top: -9px;
-// }
-// .el-checkbox__inner {
-//   @include setSize(20px, 20px);
-// }
-// .el-checkbox__input.is-checked .el-checkbox__inner {
-//   border: 2px solid $black;
-//   background-color: #fff;
-// }
 </style>
 
