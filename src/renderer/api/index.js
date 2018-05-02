@@ -330,6 +330,9 @@ const scheduleApi = {
   updateWorkHourAll(successCb, data) {
     put('/schedules/workhour/all', successCb, data);
   },
+  getWorkHour(successCb, startTime, endTime) {
+    get(`/schedules/workhour?startTime=${startTime}&endTime=${endTime}`, successCb);
+  },
 };
 //#endregion
 

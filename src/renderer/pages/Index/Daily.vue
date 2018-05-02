@@ -71,9 +71,9 @@ export default {
       dailyContent: '',
       onlyThisWeek: {
         firstDayOfWeek: 1,
-        disabledDate(time) {
-          return time > SUN || time < MON;
-        },
+        // disabledDate(time) {
+        //   return time > SUN || time < MON;
+        // },
       },
       onlyBeforeThisMonth: {
         disabledDate(time) {
@@ -156,7 +156,7 @@ export default {
         if (mode === 'add') {
           this.$api.$daily.add(temp, () => {
             this.isAddDaily = false;
-            this.getDailies(this.curUser);
+            this.getDailies(this.curUser, this.dailyMonth);
           });
         } else {
           temp.dailyId = data.dailyId;

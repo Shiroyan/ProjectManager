@@ -5,7 +5,7 @@
         <div id="report-workhour__dialog">
           <el-form :model="workHourForm" ref="workHourForm" :rules="rules" label-width="7.32vw" label-position="left">
             <el-form-item label="起止时间" prop="week">
-              <el-date-picker v-model="workHourForm.week" type="week" format="yyyy 第 WW 周" placeholder="选择周" :picker-options="pickerOptions">
+              <el-date-picker v-model="workHourForm.week" type="week" format="yyyy 第 WW 周" placeholder="选择周" :picker-options="pickerOptions" @change="weekChange">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="工时" prop="avaTime">
@@ -92,11 +92,11 @@ export default {
       isShowUserList: false,
       startEnd: '',
       workHourForm: {
-        week: '',
+        week: new Date(),
         avaTime: 40,
       },
       modWorkHourForm: {
-        week: '',
+        week: new Date(),
         avaTime: 40,
         members: [],
       },
@@ -191,11 +191,22 @@ export default {
         }
       });
     },
+    weekChange() {
+      this.getWorkHour();
+    },
+    getWorkHour() {
+      let startTime = date.format(date.getWeekStart(this.workHourForm.week), 'yyyy-MM-dd');
+      let endTime = date.format(date.getWeekEnd(this.workHourForm.week), 'yyyy-MM-dd');
+      this.$api.$sche.getWorkHour(({ avaTime }) => {
+        this.workHourForm.avaTime = avaTime;
+      }, startTime, endTime);
+    },
   },
-  mounted() {
+  created() {
     this.getSchedules();
     this.users.users.length === 0
       && this.$api.$users.getUsersList(users => this.updateUsers(users));
+    this.getWorkHour();
   },
 };
 </script>
